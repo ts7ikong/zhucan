@@ -304,14 +304,6 @@
 
       <div class="a11y-option">
         <div>
-          <div class="a11y-option-name">语音播报（TTS）</div>
-          <div class="a11y-option-desc">全页面文字朗读</div>
-        </div>
-        <div class="toggle on" id="toggle-tts" onclick="toggleTts()"></div>
-      </div>
-
-      <div class="a11y-option">
-        <div>
           <div class="a11y-option-name">大字体模式</div>
           <div class="a11y-option-desc">放大页面文字大小</div>
         </div>
@@ -351,7 +343,7 @@
         <div class="menu-icon mi-gray">ℹ️</div>
         <div class="menu-body">
           <div class="menu-title">关于平台</div>
-          <div class="menu-desc">v1.0 · 重庆市残疾人就业数字化服务平台</div>
+          <div class="menu-desc">v1.0 · 【平台全称待定】</div>
         </div>
         <div class="menu-arrow">›</div>
       </a>
@@ -388,7 +380,6 @@
       toggleSwitch('toggle-contrast');
       document.body.classList.toggle('high-contrast');
     }
-    function toggleTts() { toggleSwitch('toggle-tts'); }
     function toggleFont() {
       toggleSwitch('toggle-font');
       document.body.style.fontSize = document.getElementById('toggle-font').classList.contains('on') ? '18px' : '';

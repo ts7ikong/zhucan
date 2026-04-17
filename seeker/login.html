@@ -154,20 +154,13 @@
     <!-- 无障碍控制 -->
     <div class="a11y-bar">
       <button class="a11y-btn" onclick="toggleContrast()">🔆 对比度</button>
-      <button class="a11y-btn" onclick="speakPage()">🔊 朗读</button>
     </div>
 
     <!-- 头部 -->
     <div class="login-header">
       <div class="login-logo">♿</div>
       <div class="login-title">欢迎回来</div>
-      <div class="login-sub">重庆市残疾人就业数字化服务平台</div>
-    </div>
-
-    <!-- 无障碍提示 -->
-    <div class="a11y-notice">
-      <span>ℹ️</span>
-      <span>本页面支持屏幕朗读，按右上角「朗读」键可听取页面内容</span>
+      <div class="login-sub">【平台全称待定】</div>
     </div>
 
     <!-- 登录表单 -->
@@ -254,14 +247,6 @@
     }
     function toggleContrast() {
       document.body.classList.toggle('high-contrast');
-    }
-    function speakPage() {
-      if ('speechSynthesis' in window) {
-        const text = '登录页面。请输入手机号和密码进行登录。';
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'zh-CN';
-        speechSynthesis.speak(u);
-      }
     }
   </script>
 </body>
