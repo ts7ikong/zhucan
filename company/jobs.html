@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>我的岗位</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .jobs-header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); }
+    .jobs-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 52px; }
+    .jobs-topbar a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .jobs-topbar-title { font-size: 17px; font-weight: 700; }
+    .post-btn {
+      display: flex; align-items: center; gap: 4px;
+      padding: 6px 14px; background: var(--primary);
+      border-radius: 20px; color: #fff; font-size: 13px; font-weight: 600;
+      text-decoration: none; cursor: pointer;
+    }
+    .status-tabs { display: flex; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+    .status-tabs::-webkit-scrollbar { display: none; }
+    .stab { padding: 10px 16px; font-size: 14px; font-weight: 500; color: var(--text-muted); border-bottom: 2.5px solid transparent; cursor: pointer; white-space: nowrap; }
+    .stab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+
+    /* 配额条 */
+    .quota-strip {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #FFF7ED;
+      font-size: 13px; color: #92400E; border-bottom: 1px solid var(--cert-border);
+    }
+    .quota-strip a { color: var(--accent); font-weight: 600; text-decoration: none; }
+
+    /* 岗位卡片 */
+    .job-card {
+      margin: 0 12px 8px; background: #fff;
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    }
+    .jc-body { padding: 14px 14px 10px; }
+    .jc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .jc-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .jc-salary { font-size: 14px; font-weight: 700; color: #EF4444; }
+    .jc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .jc-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+    .jc-meta span { display: flex; align-items: center; gap: 3px; }
+    /* 数据行 */
+    .jc-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--border); background: var(--bg);
+    }
+    .jstat { padding: 8px 0; text-align: center; border-right: 1px solid var(--border); }
+    .jstat:last-child { border-right: none; }
+    .jstat-num { font-size: 17px; font-weight: 700; color: var(--accent); }
+    .jstat-lbl { font-size: 11px; color: var(--text-muted); }
+    /* 操作行 */
+    .jc-actions {
+      display: flex; gap: 8px; align-items: center;
+      padding: 10px 14px; border-top: 1px solid var(--border);
+      background: #fff;
+    }
+    .jc-time { font-size: 11px; color: #94A3B8; flex: 1; }
+    .jc-btn {
+      padding: 5px 12px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; cursor: pointer; border: none;
+    }
+    .jc-btn-outline { background: #fff; color: var(--text-muted); border: 1px solid var(--border); }
+    .jc-btn-primary { background: var(--primary); color: #fff; }
+    .jc-btn-warn { background: #FFF7ED; color: var(--warning); border: 1px solid #FDE68A; }
+
+    /* 已下架/已满员卡片 */
+    .job-card.inactive { opacity: 0.65; }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-green { background: var(--success); }
+    .dot-gray { background: #94A3B8; }
+    .dot-orange { background: var(--warning); }
+
+    /* 快到期警告 */
+    .expire-warn {
+      background: #FFFBEB; padding: 6px 14px;
+      font-size: 12px; color: #92400E;
+      display: flex; align-items: center; gap: 6px;
+      border-top: 1px solid var(--cert-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="jobs-header">
+      <div class="jobs-topbar">
+        <a href="home.html">←</a>
+        <div class="jobs-topbar-title">我的岗位</div>
+        <a href="post-job.html" class="post-btn">＋ 发布</a>
+      </div>
+      <div class="status-tabs">
+        <div class="stab active" onclick="switchTab(this)">招聘中(3)</div>
+        <div class="stab" onclick="switchTab(this)">审核中(1)</div>
+        <div class="stab" onclick="switchTab(this)">已下架(2)</div>
+        <div class="stab" onclick="switchTab(this)">草稿(1)</div>
+      </div>
+    </div>
+
+    <!-- 配额提示（非认证企业） -->
+    <div class="quota-strip">
+      <span>⚠️ 当前已使用 <strong>3/5</strong> 个岗位配额</span>
+      <a href="upgrade.html">升级解锁更多 →</a>
+    </div>
+
+    <div style="height:8px;"></div>
+
+    <!-- 岗位卡：招聘中 -->
+    <div class="job-card">
+      <div class="jc-body">
+        <div class="jc-top">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <div class="status-dot dot-green"></div>
+            <div class="jc-name">客服专员（居家办公）</div>
+          </div>
+          <div class="jc-salary">5000-7000元</div>
+        </div>
+        <div class="jc-tags">
+          <span class="tag tag-teal">居家办公</span>
+          <span class="tag tag-gray">全职</span>
+          <span class="tag tag-orange">肢体障碍友好</span>
+        </div>
+        <div class="jc-meta">
+          <span>📍 渝中区</span>
+          <span>👥 3-5人</span>
+          <span>🎓 大专及以上</span>
+        </div>
+      </div>
+      <!-- 快到期警告 -->
+      <div class="expire-warn">
+        <span>⏰</span>
+        <span>岗位将于 <strong>3天后</strong> 到期，到期自动下架</span>
+        <span style="flex:1;text-align:right;color:var(--accent);font-weight:600;cursor:pointer;" onclick="refreshJob()">立即刷新</span>
+      </div>
+      <div class="jc-stats">
+        <div class="jstat"><div class="jstat-num">28</div><div class="jstat-lbl">浏览次数</div></div>
+        <a href="applications.html" class="jstat" style="text-decoration:none;">
+          <div class="jstat-num" style="color:var(--primary);">12</div><div class="jstat-lbl">收到投递</div>
+        </a>
+        <div class="jstat"><div class="jstat-num" style="color:var(--success);">3</div><div class="jstat-lbl">面试邀约</div></div>
+      </div>
+      <div class="jc-actions">
+        <div class="jc-time">发布于 2026-03-18 · 剩余 3 天</div>
+        <button class="jc-btn jc-btn-outline" onclick="editJob()">编辑</button>
+        <button class="jc-btn jc-btn-warn" onclick="offlineJob()">下架</button>
+        <a href="applications.html" class="jc-btn jc-btn-primary" style="text-decoration:none;">查看投递</a>
+      </div>
+    </div>
+
+    <div class="job-card">
+      <div class="jc-body">
+        <div class="jc-top">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <div class="status-dot dot-green"></div>
+            <div class="jc-name">数据录入专员</div>
+          </div>
+          <div class="jc-salary">4000-5500元</div>
+        </div>
+        <div class="jc-tags">
+          <span class="tag tag-teal">全职</span>
+          <span class="tag tag-gray">不限学历</span>
+        </div>
+        <div class="jc-meta"><span>📍 江北区</span><span>👥 2-3人</span></div>
+      </div>
+      <div class="jc-stats">
+        <div class="jstat"><div class="jstat-num">15</div><div class="jstat-lbl">浏览次数</div></div>
+        <div class="jstat"><div class="jstat-num" style="color:var(--primary);">5</div><div class="jstat-lbl">收到投递</div></div>
+        <div class="jstat"><div class="jstat-num" style="color:var(--success);">1</div><div class="jstat-lbl">面试邀约</div></div>
+      </div>
+      <div class="jc-actions">
+        <div class="jc-time">发布于 2026-04-10 · 剩余 20 天</div>
+        <button class="jc-btn jc-btn-outline">编辑</button>
+        <button class="jc-btn jc-btn-warn">下架</button>
+        <a href="applications.html" class="jc-btn jc-btn-primary" style="text-decoration:none;">查看投递</a>
+      </div>
+    </div>
+
+    <div class="job-card">
+      <div class="jc-body">
+        <div class="jc-top">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <div class="status-dot dot-green"></div>
+            <div class="jc-name">在线客服（文字）</div>
+          </div>
+          <div class="jc-salary">4500-6500元</div>
+        </div>
+        <div class="jc-tags">
+          <span class="tag tag-teal">兼职可</span>
+          <span class="tag tag-gray">不限学历</span>
+        </div>
+        <div class="jc-meta"><span>📍 渝中区（可居家）</span><span>👥 1人</span></div>
+      </div>
+      <div class="jc-stats">
+        <div class="jstat"><div class="jstat-num">9</div><div class="jstat-lbl">浏览次数</div></div>
+        <div class="jstat"><div class="jstat-num" style="color:var(--primary);">3</div><div class="jstat-lbl">收到投递</div></div>
+        <div class="jstat"><div class="jstat-num" style="color:var(--success);">0</div><div class="jstat-lbl">面试邀约</div></div>
+      </div>
+      <div class="jc-actions">
+        <div class="jc-time">发布于 2026-04-15 · 剩余 25 天</div>
+        <button class="jc-btn jc-btn-outline">编辑</button>
+        <button class="jc-btn jc-btn-warn">下架</button>
+        <a href="applications.html" class="jc-btn jc-btn-primary" style="text-decoration:none;">查看投递</a>
+      </div>
+    </div>
+
+    <div class="gap-block"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">工作台</div></a>
+    <a href="jobs.html" class="nav-item active"><div class="nav-icon">📋</div><div class="nav-label">岗位</div></a>
+    <a href="resumes.html" class="nav-item"><div class="nav-icon">🔍</div><div class="nav-label">找人才</div></a>
+    <a href="profile.html" class="nav-item"><div class="nav-icon">🏢</div><div class="nav-label">企业中心</div></a>
+  </nav>
+
+  <script>
+    function switchTab(el) { document.querySelectorAll('.stab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
+    function refreshJob() { alert('岗位已刷新！有效期延续至30天后。'); }
+    function editJob() { window.location.href = 'post-job.html'; }
+    function offlineJob() { if (confirm('确认下架该岗位？下架后求职者将无法看到此岗位。')) alert('岗位已下架。'); }
+  </script>
+</body>
+</html>

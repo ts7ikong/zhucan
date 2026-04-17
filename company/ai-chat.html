@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>AI 招聘助手</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .chat-topbar {
+      position: sticky; top: 0; z-index: 100; background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 52px;
+    }
+    .chat-topbar a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .chat-topbar-title { font-size: 17px; font-weight: 700; }
+    .ai-status { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--success); }
+    .ai-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+    /* 聊天区 */
+    .chat-area { padding: 16px 14px; min-height: calc(100vh - 52px - 120px); }
+
+    /* AI 欢迎卡 */
+    .ai-welcome {
+      background: linear-gradient(135deg, var(--primary-light) 0%, #F0FDFA 100%);
+      border: 1px solid #99F6E4; border-radius: var(--radius);
+      padding: 16px; margin-bottom: 16px;
+    }
+    .ai-avatar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .ai-logo { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .ai-name { font-size: 15px; font-weight: 800; color: var(--text); }
+    .ai-sub { font-size: 12px; color: var(--text-muted); }
+    .ai-intro { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+    /* 消息气泡 */
+    .msg-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .msg-row.mine { flex-direction: row-reverse; }
+    .msg-avt { width: 34px; height: 34px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .msg-avt.ai-avt { background: var(--primary); }
+    .bubble { max-width: 76%; padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.7; }
+    .msg-row:not(.mine) .bubble { background: #fff; border-radius: 0 12px 12px 12px; color: var(--text); box-shadow: var(--shadow); }
+    .msg-row.mine .bubble { background: var(--primary); border-radius: 12px 0 12px 12px; color: #fff; }
+
+    /* AI 推荐候选人小卡 */
+    .rec-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; margin-top: 8px;
+    }
+    .rc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .rc-avt { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .rc-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .rc-tag { font-size: 11px; color: var(--text-muted); }
+    .rc-match { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 8px; }
+    .rc-action { font-size: 12px; color: var(--primary); font-weight: 600; cursor: pointer; text-align: right; }
+
+    /* 快捷提示 */
+    .quick-prompts { padding: 8px 14px 0; }
+    .qp-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+    .qp-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+    .qp-scroll::-webkit-scrollbar { display: none; }
+    .qp-chip {
+      white-space: nowrap; padding: 6px 14px; border-radius: 18px;
+      border: 1.5px solid var(--primary); background: var(--primary-light);
+      color: var(--primary); font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0;
+    }
+
+    /* 输入区 */
+    .input-area {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 390px; background: #fff;
+      border-top: 1px solid var(--border); padding: 10px 14px; z-index: 100;
+    }
+    .input-row { display: flex; gap: 8px; align-items: flex-end; }
+    .chat-input {
+      flex: 1; min-height: 40px; max-height: 100px; border: 1.5px solid var(--border);
+      border-radius: 20px; padding: 9px 14px; font-size: 13px; color: var(--text);
+      outline: none; resize: none; line-height: 1.5; overflow-y: auto;
+    }
+    .chat-input:focus { border-color: var(--primary); }
+    .send-btn { width: 42px; height: 40px; border-radius: 50%; background: var(--primary); border: none; color: #fff; font-size: 16px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+    /* 功能入口 */
+    .func-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px 14px 8px; }
+    .func-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+    .func-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .func-label { font-size: 10px; color: var(--text-muted); text-align: center; }
+  </style>
+</head>
+<body>
+  <div id="chat-page" style="padding-bottom: 76px;">
+    <div class="chat-topbar">
+      <a href="home.html">←</a>
+      <div class="chat-topbar-title">AI 招聘助手</div>
+      <div class="ai-status"><div class="ai-status-dot"></div>在线</div>
+    </div>
+
+    <!-- 功能快捷入口 -->
+    <div class="func-grid">
+      <div class="func-item" onclick="sendQuick('帮我分析本周投递情况')">
+        <div class="func-icon">📊</div>
+        <div class="func-label">投递分析</div>
+      </div>
+      <div class="func-item" onclick="sendQuick('推荐与我岗位匹配的候选人')">
+        <div class="func-icon">🎯</div>
+        <div class="func-label">人才推荐</div>
+      </div>
+      <div class="func-item" onclick="sendQuick('帮我优化岗位描述')">
+        <div class="func-icon">✍️</div>
+        <div class="func-label">优化岗位</div>
+      </div>
+      <div class="func-item" onclick="sendQuick('查询残疾人就业补贴政策')">
+        <div class="func-icon">📋</div>
+        <div class="func-label">政策查询</div>
+      </div>
+    </div>
+
+    <div class="chat-area" id="chat-area">
+      <!-- AI 欢迎卡 -->
+      <div class="ai-welcome">
+        <div class="ai-avatar-row">
+          <div class="ai-logo">🤖</div>
+          <div>
+            <div class="ai-name">AI 招聘助手</div>
+            <div class="ai-sub">专注残疾人就业匹配</div>
+          </div>
+        </div>
+        <div class="ai-intro">您好！我是您的专属 AI 招聘助手。我可以帮您：<br>
+          · 推荐高匹配度的残疾人候选人<br>
+          · 分析您的岗位发布效果<br>
+          · 解读残疾人就业相关政策<br>
+          · 优化岗位描述提升曝光率<br>
+          请直接告诉我您的需求吧！
+        </div>
+      </div>
+
+      <!-- AI 主动推送 -->
+      <div class="msg-row">
+        <div class="msg-avt ai-avt">🤖</div>
+        <div class="bubble">
+          您好！根据您发布的「客服专员（居家办公）」岗位，我为您找到了 <strong>3位</strong> 高匹配候选人，AI 匹配分均在 80 分以上：
+          <div class="rec-card">
+            <div class="rc-top">
+              <div class="rc-avt">😊</div>
+              <div>
+                <div class="rc-name">王小明</div>
+                <div class="rc-tag">肢体障碍·三级 · 2年经验 · 居家</div>
+              </div>
+              <div class="rc-match">🎯 92</div>
+            </div>
+            <div class="rc-action" onclick="window.location.href='resume-detail.html'">查看简历 →</div>
+          </div>
+          <div class="rec-card">
+            <div class="rc-top">
+              <div class="rc-avt">👩</div>
+              <div>
+                <div class="rc-name">李梅</div>
+                <div class="rc-tag">视力障碍·二级 · 1年经验 · 全职</div>
+              </div>
+              <div class="rc-match">🎯 85</div>
+            </div>
+            <div class="rc-action" onclick="window.location.href='resume-detail.html'">查看简历 →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 用户提问 -->
+      <div class="msg-row mine">
+        <div class="msg-avt">🏢</div>
+        <div class="bubble">帮我分析一下这周的招聘效果</div>
+      </div>
+
+      <!-- AI 回复 -->
+      <div class="msg-row">
+        <div class="msg-avt ai-avt">🤖</div>
+        <div class="bubble">
+          📊 <strong>本周招聘数据摘要</strong><br><br>
+          • 岗位总曝光：<strong>52次</strong>（↑18% vs上周）<br>
+          • 收到新投递：<strong>8份</strong>，其中高匹配（≥80分）4份<br>
+          • 面试邀约转化率：<strong>37.5%</strong>（行业均值28%）<br><br>
+          📈 <strong>建议</strong>：「数据录入专员」的浏览量较低，建议补充岗位描述中的工作内容细节，并添加「打字速度不限」标签，预计可提升 30% 曝光量。
+        </div>
+      </div>
+    </div>
+
+    <!-- 快捷提示 -->
+    <div class="quick-prompts">
+      <div class="qp-scroll">
+        <div class="qp-chip" onclick="sendQuick('如何吸引更多残疾求职者投递？')">如何提升投递量？</div>
+        <div class="qp-chip" onclick="sendQuick('解释AI匹配分数的计算方式')">匹配分怎么算？</div>
+        <div class="qp-chip" onclick="sendQuick('帮我起草一份面试邀约消息模板')">邀约消息模板</div>
+        <div class="qp-chip" onclick="sendQuick('残保金减免政策有哪些？')">残保金政策</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 输入区 -->
+  <div class="input-area">
+    <div class="input-row">
+      <textarea class="chat-input" id="chat-input" placeholder="向 AI 助手提问…" rows="1" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    const aiReplies = {
+      '帮我分析本周投递情况': '📊 <strong>本周数据报告</strong><br><br>您共收到 <strong>8份投递</strong>，其中：<br>• AI匹配≥80分：4份（50%）<br>• 已查看：6份 · 未查看：2份<br>• 已发出邀约：3份<br><br>📌 本周最活跃岗位是「客服专员」，建议优先处理待回复的2位候选人。',
+      '推荐与我岗位匹配的候选人': '为您的现有岗位找到最新匹配候选人：<br><br>• 王小明 🎯92 - 客服专员（居家）<br>• 李梅 🎯85 - 行政/客服<br>• 张宇 🎯78 - 数据录入<br><br>建议先优先联系王小明，他的工作形式与您的「居家办公」需求高度吻合。',
+      '帮我优化岗位描述': '我注意到您的「数据录入专员」岗位描述较简短，建议补充以下内容：<br><br>✅ 具体工作内容（录入系统类型）<br>✅ 工作强度描述（日处理量）<br>✅ 友好表述：如"无需频繁走动，适合肢体障碍人士"<br><br>优化后预计提升 25-35% 的匹配推送量。需要我帮您起草优化版本吗？',
+      '查询残疾人就业补贴政策': '🏛️ <strong>重庆市残疾人就业补贴政策（2026年）</strong><br><br>• 岗位补贴：每录用1名残疾员工，最高补贴 <strong>6000元/年</strong><br>• 社保补贴：为残疾员工缴纳的社保费用，可申请50%补贴<br>• 残保金减免：足额安置残疾员工可减免残保金<br><br>申请流程：线上提交 → 区残联审核 → 银行发放',
+    };
+
+    function sendQuick(text) {
+      document.getElementById('chat-input').value = text;
+      sendMessage();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const area = document.getElementById('chat-area');
+
+      const userMsg = document.createElement('div');
+      userMsg.className = 'msg-row mine';
+      userMsg.innerHTML = `<div class="msg-avt">🏢</div><div class="bubble">${text}</div>`;
+      area.appendChild(userMsg);
+
+      input.value = '';
+      input.style.height = 'auto';
+
+      setTimeout(() => {
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'msg-row';
+        const reply = aiReplies[text] || '好的，我正在分析您的问题，稍后为您提供建议。如果您需要了解更多关于候选人匹配、岗位优化或政策解读，随时告诉我！';
+        aiMsg.innerHTML = `<div class="msg-avt ai-avt">🤖</div><div class="bubble">${reply}</div>`;
+        area.appendChild(aiMsg);
+        area.scrollTop = area.scrollHeight;
+      }, 800);
+
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+    }
+
+    document.getElementById('chat-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+  </script>
+</body>
+</html>

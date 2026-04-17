@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>候选人简历</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .detail-topbar { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 52px; }
+    .detail-topbar a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .detail-topbar-title { font-size: 17px; font-weight: 700; }
+
+    /* 候选人头部 */
+    .candidate-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #0F766E 100%);
+      padding: 24px 16px 20px; color: #fff;
+    }
+    .hero-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+    .hero-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(255,255,255,.25); display: flex; align-items: center;
+      justify-content: center; font-size: 32px; flex-shrink: 0;
+    }
+    .hero-info { flex: 1; }
+    .hero-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .hero-meta { font-size: 13px; opacity: .85; line-height: 1.7; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .hero-tag { padding: 3px 10px; border-radius: 12px; background: rgba(255,255,255,.2); font-size: 12px; }
+    .ai-score-badge {
+      background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.4);
+      border-radius: 12px; padding: 6px 12px; text-align: center;
+    }
+    .ai-score-num { font-size: 28px; font-weight: 900; line-height: 1; }
+    .ai-score-lbl { font-size: 11px; opacity: .8; }
+
+    /* 5维匹配 */
+    .match-card { background: #fff; margin: 0 12px 8px; border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; }
+    .match-card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    .match-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .match-row:last-child { margin-bottom: 0; }
+    .match-dim { font-size: 12px; color: var(--text-muted); width: 60px; flex-shrink: 0; }
+    .match-bar-wrap { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .match-bar { height: 100%; border-radius: 4px; background: var(--primary); }
+    .match-score { font-size: 12px; font-weight: 700; color: var(--primary); width: 30px; text-align: right; }
+
+    /* 简历块 */
+    .resume-block { background: #fff; margin: 0 12px 8px; border-radius: var(--radius); box-shadow: var(--shadow); }
+    .rb-header { padding: 14px 14px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .rb-icon { font-size: 16px; }
+    .rb-title { font-size: 15px; font-weight: 700; color: var(--text); }
+    .rb-body { padding: 12px 14px; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+    .info-item { }
+    .info-label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+    .info-value { font-size: 13px; color: var(--text); font-weight: 500; }
+
+    .exp-item { margin-bottom: 14px; }
+    .exp-item:last-child { margin-bottom: 0; }
+    .exp-company { font-size: 14px; font-weight: 700; color: var(--text); }
+    .exp-role { font-size: 13px; color: var(--primary); margin: 2px 0; }
+    .exp-period { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .exp-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    .skill-list { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    /* 底部操作栏 */
+    .action-bar {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 390px; background: #fff;
+      border-top: 1px solid var(--border); padding: 10px 16px;
+      display: flex; gap: 10px; z-index: 100;
+    }
+    .btn-fav2 { flex: 1; height: 46px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-fav2.faved { background: #FEF2F2; color: var(--error); border-color: #FECACA; }
+    .btn-invite { flex: 2; height: 46px; background: var(--primary); border: none; border-radius: var(--radius-sm); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
+
+    /* 残疾情况块 */
+    .disability-block { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-sm); padding: 12px; }
+    .disability-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .disability-row:last-child { margin-bottom: 0; }
+    .d-label { font-size: 12px; color: #92400E; width: 64px; flex-shrink: 0; }
+    .d-value { font-size: 13px; color: var(--text); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div style="padding-bottom: 76px;">
+    <div class="detail-topbar">
+      <a href="resumes.html">←</a>
+      <div class="detail-topbar-title">候选人简历</div>
+      <div style="font-size:13px;color:var(--primary);cursor:pointer;" onclick="shareResume()">分享</div>
+    </div>
+
+    <!-- 候选人头部 -->
+    <div class="candidate-hero">
+      <div class="hero-top">
+        <div class="hero-avatar">😊</div>
+        <div class="hero-info">
+          <div class="hero-name">王小明</div>
+          <div class="hero-meta">男 · 28岁 · 重庆渝中区<br>已实名认证 · 残疾人证已验证</div>
+          <div style="height:8px;"></div>
+          <div class="hero-tags">
+            <span class="hero-tag">肢体障碍·三级</span>
+            <span class="hero-tag">大专</span>
+            <span class="hero-tag">2年经验</span>
+            <span class="hero-tag">期望居家办公</span>
+          </div>
+        </div>
+        <div class="ai-score-badge">
+          <div class="ai-score-num">92</div>
+          <div class="ai-score-lbl">AI匹配</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:8px;"></div>
+
+    <!-- AI 匹配分析 -->
+    <div class="match-card">
+      <div class="match-card-title">🎯 AI 匹配分析（满分100）</div>
+      <div class="match-row">
+        <div class="match-dim">残疾类型</div>
+        <div class="match-bar-wrap"><div class="match-bar" style="width:92%;"></div></div>
+        <div class="match-score">23/25</div>
+      </div>
+      <div class="match-row">
+        <div class="match-dim">工作形式</div>
+        <div class="match-bar-wrap"><div class="match-bar" style="width:100%;"></div></div>
+        <div class="match-score">20/20</div>
+      </div>
+      <div class="match-row">
+        <div class="match-dim">工作地点</div>
+        <div class="match-bar-wrap"><div class="match-bar" style="width:85%;"></div></div>
+        <div class="match-score">17/20</div>
+      </div>
+      <div class="match-row">
+        <div class="match-dim">技能匹配</div>
+        <div class="match-bar-wrap"><div class="match-bar" style="width:80%;"></div></div>
+        <div class="match-score">16/20</div>
+      </div>
+      <div class="match-row">
+        <div class="match-dim">薪资期望</div>
+        <div class="match-bar-wrap"><div class="match-bar" style="width:80%;"></div></div>
+        <div class="match-score">12/15</div>
+      </div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text-muted);">
+        AI 综合评分：<strong style="color:var(--primary);font-size:14px;">88/100</strong>（居家办公需求与岗位高度匹配）
+      </div>
+    </div>
+
+    <!-- 求职意向 -->
+    <div class="resume-block">
+      <div class="rb-header"><span class="rb-icon">💼</span><span class="rb-title">求职意向</span></div>
+      <div class="rb-body">
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">期望岗位</div><div class="info-value">客服专员、数据录入</div></div>
+          <div class="info-item"><div class="info-label">期望薪资</div><div class="info-value" style="color:#EF4444;">4000-7000元</div></div>
+          <div class="info-item"><div class="info-label">工作类型</div><div class="info-value">全职 / 居家</div></div>
+          <div class="info-item"><div class="info-label">期望地点</div><div class="info-value">重庆（可居家）</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 残疾情况 -->
+    <div class="resume-block">
+      <div class="rb-header"><span class="rb-icon">♿</span><span class="rb-title">残疾情况</span></div>
+      <div class="rb-body">
+        <div class="disability-block">
+          <div class="disability-row"><span class="d-label">残疾类型</span><span class="d-value">肢体残疾</span></div>
+          <div class="disability-row"><span class="d-label">残疾等级</span><span class="d-value">三级（中度）</span></div>
+          <div class="disability-row"><span class="d-label">证件号</span><span class="d-value">5001**************（已核验）</span></div>
+          <div class="disability-row"><span class="d-label">特殊需求</span><span class="d-value">无障碍通道或可居家办公</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 基本信息 -->
+    <div class="resume-block">
+      <div class="rb-header"><span class="rb-icon">👤</span><span class="rb-title">基本信息</span></div>
+      <div class="rb-body">
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">性别</div><div class="info-value">男</div></div>
+          <div class="info-item"><div class="info-label">年龄</div><div class="info-value">28岁</div></div>
+          <div class="info-item"><div class="info-label">学历</div><div class="info-value">大专</div></div>
+          <div class="info-item"><div class="info-label">专业</div><div class="info-value">计算机应用</div></div>
+          <div class="info-item"><div class="info-label">所在地</div><div class="info-value">重庆渝中区</div></div>
+          <div class="info-item"><div class="info-label">最近活跃</div><div class="info-value">今天</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 工作经历 -->
+    <div class="resume-block">
+      <div class="rb-header"><span class="rb-icon">🏢</span><span class="rb-title">工作经历</span></div>
+      <div class="rb-body">
+        <div class="exp-item">
+          <div class="exp-company">重庆某科技有限公司</div>
+          <div class="exp-role">在线客服专员</div>
+          <div class="exp-period">2024.03 — 2025.12 · 1年9个月 · 居家办公</div>
+          <div class="exp-desc">负责处理电商平台售前售后咨询，日均处理200+工单；维护客户关系，好评率达98%；熟练使用客服系统（旺旺/云客服）。</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-company">重庆某贸易公司</div>
+          <div class="exp-role">数据录入员</div>
+          <div class="exp-period">2023.06 — 2024.02 · 9个月 · 线下</div>
+          <div class="exp-desc">负责产品信息录入、库存数据维护，熟练操作Excel、ERP系统，录入准确率99%以上。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 教育经历 -->
+    <div class="resume-block">
+      <div class="rb-header"><span class="rb-icon">🎓</span><span class="rb-title">教育经历</span></div>
+      <div class="rb-body">
+        <div class="exp-item" style="margin-bottom:0;">
+          <div class="exp-company">重庆城市职业学院</div>
+          <div class="exp-role">计算机应用技术 · 大专</div>
+          <div class="exp-period">2020.09 — 2023.06</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 技能特长 -->
+    <div class="resume-block">
+      <div class="rb-header"><span class="rb-icon">⚡</span><span class="rb-title">技能特长</span></div>
+      <div class="rb-body">
+        <div class="skill-list">
+          <span class="tag tag-teal">Office 办公</span>
+          <span class="tag tag-teal">文字客服</span>
+          <span class="tag tag-teal">数据录入</span>
+          <span class="tag tag-blue">沟通能力</span>
+          <span class="tag tag-blue">ERP 系统</span>
+          <span class="tag tag-gray">普通话</span>
+          <span class="tag tag-gray">打字 80字/分</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自我评价 -->
+    <div class="resume-block">
+      <div class="rb-header"><span class="rb-icon">✍️</span><span class="rb-title">自我评价</span></div>
+      <div class="rb-body">
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.8;">
+          性格开朗，工作认真细致，抗压能力强。具备丰富的在线客服和数据录入经验，打字速度快，沟通表达能力好。因肢体不便，优先考虑居家办公岗位，能保证工作效率和质量。
+        </div>
+      </div>
+    </div>
+
+    <div class="gap-block"></div>
+  </div>
+
+  <!-- 底部操作栏 -->
+  <div class="action-bar">
+    <button class="btn-fav2" id="fav-btn" onclick="toggleFav()">🤍 收藏</button>
+    <button class="btn-invite" onclick="inviteInterview()">邀请面试</button>
+  </div>
+
+  <script>
+    function toggleFav() {
+      const btn = document.getElementById('fav-btn');
+      const isFaved = btn.classList.contains('faved');
+      btn.classList.toggle('faved');
+      btn.textContent = isFaved ? '🤍 收藏' : '❤️ 已收藏';
+    }
+    function inviteInterview() {
+      if (confirm('确认向王小明发送面试邀请？\n\n岗位：客服专员（居家办公）\n方式：视频面试')) {
+        alert('面试邀请已发送！对方将在消息中心看到邀请。');
+      }
+    }
+    function shareResume() {
+      alert('简历链接已复制，可分享给同事查看。');
+    }
+  </script>
+</body>
+</html>

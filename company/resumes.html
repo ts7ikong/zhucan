@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>搜索简历</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .search-header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); }
+    .search-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; }
+    .search-back { font-size: 20px; color: var(--text); text-decoration: none; }
+    .search-input-wrap {
+      flex: 1; display: flex; align-items: center;
+      background: var(--bg); border-radius: 22px; padding: 0 14px; height: 40px; gap: 8px;
+      border: 1.5px solid transparent;
+    }
+    .search-input-wrap:focus-within { border-color: var(--primary); }
+    .search-input-wrap input { flex: 1; border: none; background: transparent; font-size: 14px; color: var(--text); outline: none; }
+    .search-input-wrap input::placeholder { color: #94A3B8; }
+    .filter-btn { background: none; border: none; color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+
+    .filter-scroll { display: flex; gap: 7px; padding: 8px 14px; overflow-x: auto; scrollbar-width: none; }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    .fchip {
+      padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500;
+      white-space: nowrap; cursor: pointer; border: 1.5px solid var(--border);
+      background: #fff; color: var(--text-muted); flex-shrink: 0;
+    }
+    .fchip.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+    .result-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 14px; background: #fff; border-bottom: 1px solid var(--border);
+    }
+    .result-count { font-size: 13px; color: var(--text-muted); }
+    .result-count em { color: var(--primary); font-style: normal; font-weight: 700; }
+
+    /* 候选人卡片 */
+    .candidate-card {
+      margin: 0 12px 8px; background: #fff;
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 14px; cursor: pointer; text-decoration: none; display: block;
+    }
+    .cc-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+    .cc-avatar {
+      width: 50px; height: 50px; border-radius: 50%;
+      background: var(--primary-light); display: flex; align-items: center;
+      justify-content: center; font-size: 24px; flex-shrink: 0;
+    }
+    .cc-info { flex: 1; min-width: 0; }
+    .cc-name-row { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; }
+    .cc-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .cc-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .cc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .cc-intent { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    .cc-intent strong { color: var(--text); }
+    .cc-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border); }
+    .cc-time { font-size: 11px; color: #94A3B8; }
+    .cc-actions { display: flex; gap: 7px; }
+    .cc-btn { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+    .cc-btn-fav { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+    .cc-btn-fav.faved { background: #FEF2F2; color: var(--error); border-color: #FECACA; }
+    .cc-btn-contact { background: var(--primary); color: #fff; }
+
+    .ai-match-tag { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: 700; background: var(--primary-light); color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="search-header">
+      <div class="search-row">
+        <a href="home.html" class="search-back">←</a>
+        <div class="search-input-wrap">
+          <span style="color:#94A3B8;">🔍</span>
+          <input type="text" placeholder="搜索技能、职位、专业…" value="客服">
+        </div>
+        <button class="filter-btn" onclick="alert('筛选面板')">⚙️ 筛选</button>
+      </div>
+      <div class="filter-scroll">
+        <div class="fchip active">全部</div>
+        <div class="fchip" onclick="this.classList.toggle('active')">肢体障碍</div>
+        <div class="fchip" onclick="this.classList.toggle('active')">视力障碍</div>
+        <div class="fchip" onclick="this.classList.toggle('active')">听力障碍</div>
+        <div class="fchip" onclick="this.classList.toggle('active')">大专以上</div>
+        <div class="fchip" onclick="this.classList.toggle('active')">有经验</div>
+        <div class="fchip" onclick="this.classList.toggle('active')">简历完整</div>
+        <div class="fchip" onclick="this.classList.toggle('active')">可居家</div>
+      </div>
+    </div>
+    <div class="result-bar">
+      <div class="result-count">共 <em>86</em> 位候选人</div>
+      <div style="font-size:12px;color:var(--text-muted);">按 AI 匹配度排序</div>
+    </div>
+
+    <div style="height:8px;"></div>
+
+    <a href="resume-detail.html" class="candidate-card">
+      <div class="cc-top">
+        <div class="cc-avatar">😊</div>
+        <div class="cc-info">
+          <div class="cc-name-row">
+            <div class="cc-name">王小明</div>
+            <span class="tag tag-orange" style="font-size:11px;">肢体障碍·三级</span>
+          </div>
+          <div class="cc-meta">男 · 28岁 · 重庆渝中区 · 已实名认证</div>
+          <div class="cc-tags">
+            <span class="tag tag-gray">大专</span>
+            <span class="tag tag-teal">2年经验</span>
+            <span class="tag tag-blue">期望居家办公</span>
+          </div>
+        </div>
+        <div class="ai-match-tag">🎯 92</div>
+      </div>
+      <div class="cc-intent">
+        <strong>求职意向：</strong>客服专员、数据录入 · 4000-7000元 · 全职/居家
+      </div>
+      <div class="cc-footer">
+        <div class="cc-time">活跃于 今天</div>
+        <div class="cc-actions">
+          <button class="cc-btn cc-btn-fav" id="fav-1" onclick="toggleFav(event,'fav-1')">🤍 收藏</button>
+          <button class="cc-btn cc-btn-contact" onclick="inviteInterview(event)">邀请面试</button>
+        </div>
+      </div>
+    </a>
+
+    <a href="resume-detail.html" class="candidate-card">
+      <div class="cc-top">
+        <div class="cc-avatar">👩</div>
+        <div class="cc-info">
+          <div class="cc-name-row">
+            <div class="cc-name">李梅</div>
+            <span class="tag tag-orange" style="font-size:11px;">视力障碍·二级</span>
+          </div>
+          <div class="cc-meta">女 · 25岁 · 重庆江北区 · 已实名认证</div>
+          <div class="cc-tags">
+            <span class="tag tag-gray">本科</span>
+            <span class="tag tag-teal">1年经验</span>
+            <span class="tag tag-blue">期望全职</span>
+          </div>
+        </div>
+        <div class="ai-match-tag">🎯 85</div>
+      </div>
+      <div class="cc-intent"><strong>求职意向：</strong>行政助理、客服专员 · 5000-8000元 · 全职</div>
+      <div class="cc-footer">
+        <div class="cc-time">活跃于 昨天</div>
+        <div class="cc-actions">
+          <button class="cc-btn cc-btn-fav cc-btn-fav faved" id="fav-2" onclick="toggleFav(event,'fav-2')">❤️ 已收藏</button>
+          <button class="cc-btn cc-btn-contact" onclick="inviteInterview(event)">邀请面试</button>
+        </div>
+      </div>
+    </a>
+
+    <a href="resume-detail.html" class="candidate-card">
+      <div class="cc-top">
+        <div class="cc-avatar">👦</div>
+        <div class="cc-info">
+          <div class="cc-name-row">
+            <div class="cc-name">张宇</div>
+            <span class="tag tag-orange" style="font-size:11px;">听力障碍·三级</span>
+          </div>
+          <div class="cc-meta">男 · 22岁 · 重庆沙坪坝区 · 已实名认证</div>
+          <div class="cc-tags">
+            <span class="tag tag-gray">高中</span>
+            <span class="tag tag-teal">无经验</span>
+            <span class="tag tag-blue">期望全职/兼职</span>
+          </div>
+        </div>
+        <div class="ai-match-tag">🎯 78</div>
+      </div>
+      <div class="cc-intent"><strong>求职意向：</strong>文字客服、数据录入 · 3000-5000元 · 全职</div>
+      <div class="cc-footer">
+        <div class="cc-time">活跃于 3天前</div>
+        <div class="cc-actions">
+          <button class="cc-btn cc-btn-fav" id="fav-3" onclick="toggleFav(event,'fav-3')">🤍 收藏</button>
+          <button class="cc-btn cc-btn-contact" onclick="inviteInterview(event)">邀请面试</button>
+        </div>
+      </div>
+    </a>
+
+    <a href="resume-detail.html" class="candidate-card">
+      <div class="cc-top">
+        <div class="cc-avatar">👩‍💼</div>
+        <div class="cc-info">
+          <div class="cc-name-row">
+            <div class="cc-name">陈芳</div>
+            <span class="tag tag-orange" style="font-size:11px;">肢体障碍·四级</span>
+          </div>
+          <div class="cc-meta">女 · 31岁 · 重庆九龙坡区 · 已实名认证</div>
+          <div class="cc-tags">
+            <span class="tag tag-gray">本科</span>
+            <span class="tag tag-teal">5年经验</span>
+          </div>
+        </div>
+        <div class="ai-match-tag">🎯 73</div>
+      </div>
+      <div class="cc-intent"><strong>求职意向：</strong>客户经理、销售助理 · 6000-10000元 · 全职</div>
+      <div class="cc-footer">
+        <div class="cc-time">活跃于 1周前</div>
+        <div class="cc-actions">
+          <button class="cc-btn cc-btn-fav" id="fav-4" onclick="toggleFav(event,'fav-4')">🤍 收藏</button>
+          <button class="cc-btn cc-btn-contact" onclick="inviteInterview(event)">邀请面试</button>
+        </div>
+      </div>
+    </a>
+    <div class="gap-block"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">工作台</div></a>
+    <a href="jobs.html" class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">岗位</div></a>
+    <a href="resumes.html" class="nav-item active"><div class="nav-icon">🔍</div><div class="nav-label">找人才</div></a>
+    <a href="profile.html" class="nav-item"><div class="nav-icon">🏢</div><div class="nav-label">企业中心</div></a>
+  </nav>
+
+  <script>
+    function toggleFav(e, id) {
+      e.preventDefault(); e.stopPropagation();
+      const btn = document.getElementById(id);
+      const isFaved = btn.classList.contains('faved');
+      btn.classList.toggle('faved');
+      btn.textContent = isFaved ? '🤍 收藏' : '❤️ 已收藏';
+    }
+    function inviteInterview(e) {
+      e.preventDefault(); e.stopPropagation();
+      alert('面试邀约已发送！请前往「消息中心」查看。');
+    }
+  </script>
+</body>
+</html>

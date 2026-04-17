@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>收到的投递</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .apps-header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--border); }
+    .apps-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 52px; }
+    .apps-topbar a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .apps-topbar-title { font-size: 17px; font-weight: 700; }
+
+    /* 岗位筛选器 */
+    .job-filter { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    .job-filter select { width: 100%; height: 38px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--text); padding: 0 14px; background: #fff; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+
+    /* 状态标签 */
+    .status-tabs { display: flex; padding: 0 14px; overflow-x: auto; scrollbar-width: none; }
+    .status-tabs::-webkit-scrollbar { display: none; }
+    .stab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--text-muted); border-bottom: 2.5px solid transparent; cursor: pointer; white-space: nowrap; }
+    .stab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+
+    /* 统计条 */
+    .stats-strip { display: flex; border-bottom: 1px solid var(--border); }
+    .strip-item { flex: 1; text-align: center; padding: 8px 0; }
+    .strip-num { font-size: 17px; font-weight: 800; color: var(--accent); }
+    .strip-lbl { font-size: 10px; color: var(--text-muted); }
+    .strip-item:not(:last-child) { border-right: 1px solid var(--border); }
+
+    /* 投递卡片 */
+    .app-card {
+      margin: 0 12px 8px; background: #fff;
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    }
+    .app-card-body { padding: 14px; }
+    .app-top { display: flex; align-items: flex-start; gap: 10px; }
+    .app-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .app-info { flex: 1; min-width: 0; }
+    .app-name-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+    .app-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .app-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .app-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .app-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+    .app-match { font-size: 12px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 10px; }
+    .app-time { font-size: 11px; color: #94A3B8; }
+
+    /* 状态指示 */
+    .app-status-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: var(--bg); }
+    .app-status { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .dot-new { background: #3B82F6; }
+    .dot-viewed { background: #94A3B8; }
+    .dot-invited { background: var(--primary); }
+    .dot-pass { background: var(--success); }
+    .dot-reject { background: var(--error); }
+
+    /* 操作区 */
+    .app-actions { display: flex; gap: 7px; padding: 10px 14px; border-top: 1px solid var(--border); background: #fff; }
+    .app-action-time { flex: 1; font-size: 11px; color: #94A3B8; align-self: center; }
+    .app-btn { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+    .app-btn-outline { background: #fff; color: var(--text-muted); border: 1px solid var(--border); }
+    .app-btn-pass { background: #ECFDF5; color: var(--success); border: 1px solid #6EE7B7; }
+    .app-btn-reject { background: #FEF2F2; color: var(--error); border: 1px solid #FECACA; }
+    .app-btn-invite { background: var(--primary); color: #fff; }
+
+    /* 投递的岗位 */
+    .app-job-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; background: #EFF6FF; color: #2563EB; border-radius: 6px;
+      padding: 2px 8px; margin-bottom: 4px;
+    }
+
+    /* 批量操作 */
+    .bulk-bar {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 390px; background: #fff;
+      border-top: 1px solid var(--border); padding: 10px 16px;
+      display: flex; gap: 10px; z-index: 100;
+    }
+    .bulk-btn { flex: 1; height: 44px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .bulk-pass { background: #ECFDF5; color: var(--success); }
+    .bulk-reject { background: #FEF2F2; color: var(--error); }
+    .bulk-invite { background: var(--primary); color: #fff; }
+  </style>
+</head>
+<body>
+  <div style="padding-bottom: 76px;">
+    <div class="apps-header">
+      <div class="apps-topbar">
+        <a href="jobs.html">←</a>
+        <div class="apps-topbar-title">收到的投递</div>
+        <div style="font-size:13px;color:var(--primary);cursor:pointer;" onclick="batchMode()">批量操作</div>
+      </div>
+
+      <!-- 岗位筛选 -->
+      <div class="job-filter">
+        <select onchange="filterByJob(this.value)">
+          <option value="">全部岗位（共3个）</option>
+          <option value="1">客服专员（居家办公）· 12条</option>
+          <option value="2">数据录入专员 · 5条</option>
+          <option value="3">在线客服（文字）· 3条</option>
+        </select>
+      </div>
+
+      <!-- 状态标签 -->
+      <div class="status-tabs">
+        <div class="stab active" onclick="switchTab(this)">全部(20)</div>
+        <div class="stab" onclick="switchTab(this)">待处理(8)</div>
+        <div class="stab" onclick="switchTab(this)">邀约面试(5)</div>
+        <div class="stab" onclick="switchTab(this)">通过(4)</div>
+        <div class="stab" onclick="switchTab(this)">淘汰(3)</div>
+      </div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats-strip">
+      <div class="strip-item"><div class="strip-num">20</div><div class="strip-lbl">总投递</div></div>
+      <div class="strip-item"><div class="strip-num" style="color:#3B82F6;">8</div><div class="strip-lbl">待处理</div></div>
+      <div class="strip-item"><div class="strip-num" style="color:var(--primary);">5</div><div class="strip-lbl">邀约中</div></div>
+      <div class="strip-item"><div class="strip-num" style="color:var(--success);">4</div><div class="strip-lbl">已通过</div></div>
+    </div>
+
+    <div style="height:8px;"></div>
+
+    <!-- 投递卡片 1：待处理（新投递） -->
+    <div class="app-card">
+      <div class="app-card-body">
+        <div class="app-job-chip">📋 客服专员（居家办公）</div>
+        <div class="app-top">
+          <a href="resume-detail.html" class="app-avatar" style="text-decoration:none;">😊</a>
+          <div class="app-info">
+            <div class="app-name-row">
+              <a href="resume-detail.html" class="app-name" style="text-decoration:none;color:var(--text);">王小明</a>
+              <span class="tag tag-orange" style="font-size:11px;">肢体障碍</span>
+            </div>
+            <div class="app-meta">男 · 28岁 · 大专 · 2年经验</div>
+            <div class="app-tags">
+              <span class="tag tag-teal">居家办公</span>
+              <span class="tag tag-blue">渝中区</span>
+            </div>
+          </div>
+          <div class="app-right">
+            <div class="app-match">🎯 92</div>
+            <div class="app-time">2小时前</div>
+          </div>
+        </div>
+      </div>
+      <div class="app-status-row">
+        <div class="app-status"><div class="status-dot dot-new"></div><span style="color:#3B82F6;">新投递</span></div>
+        <div style="font-size:12px;color:var(--text-muted);">期望薪资 4000-7000元</div>
+      </div>
+      <div class="app-actions">
+        <div class="app-action-time">投递于 今天 14:23</div>
+        <button class="app-btn app-btn-outline" onclick="viewResume()">查看简历</button>
+        <button class="app-btn app-btn-reject" onclick="rejectApp(this)">不合适</button>
+        <button class="app-btn app-btn-invite" onclick="inviteApp(this)">邀面试</button>
+      </div>
+    </div>
+
+    <!-- 投递卡片 2：已邀约 -->
+    <div class="app-card">
+      <div class="app-card-body">
+        <div class="app-job-chip">📋 客服专员（居家办公）</div>
+        <div class="app-top">
+          <div class="app-avatar">👩</div>
+          <div class="app-info">
+            <div class="app-name-row">
+              <a href="resume-detail.html" class="app-name" style="text-decoration:none;color:var(--text);">李梅</a>
+              <span class="tag tag-orange" style="font-size:11px;">视力障碍</span>
+            </div>
+            <div class="app-meta">女 · 25岁 · 本科 · 1年经验</div>
+            <div class="app-tags">
+              <span class="tag tag-teal">全职</span>
+              <span class="tag tag-blue">江北区</span>
+            </div>
+          </div>
+          <div class="app-right">
+            <div class="app-match">🎯 85</div>
+            <div class="app-time">昨天</div>
+          </div>
+        </div>
+      </div>
+      <div class="app-status-row">
+        <div class="app-status"><div class="status-dot dot-invited"></div><span style="color:var(--primary);">已邀约面试</span></div>
+        <div style="font-size:12px;color:var(--text-muted);">面试时间待确认</div>
+      </div>
+      <div class="app-actions">
+        <div class="app-action-time">投递于 昨天 09:15</div>
+        <button class="app-btn app-btn-outline" onclick="viewResume()">查看简历</button>
+        <button class="app-btn app-btn-pass" onclick="passApp(this)">通过</button>
+        <button class="app-btn app-btn-reject" onclick="rejectApp(this)">淘汰</button>
+      </div>
+    </div>
+
+    <!-- 投递卡片 3：待处理 -->
+    <div class="app-card">
+      <div class="app-card-body">
+        <div class="app-job-chip">📋 数据录入专员</div>
+        <div class="app-top">
+          <div class="app-avatar">👦</div>
+          <div class="app-info">
+            <div class="app-name-row">
+              <a href="resume-detail.html" class="app-name" style="text-decoration:none;color:var(--text);">张宇</a>
+              <span class="tag tag-orange" style="font-size:11px;">听力障碍</span>
+            </div>
+            <div class="app-meta">男 · 22岁 · 高中 · 无经验</div>
+            <div class="app-tags">
+              <span class="tag tag-gray">全职</span>
+              <span class="tag tag-blue">沙坪坝区</span>
+            </div>
+          </div>
+          <div class="app-right">
+            <div class="app-match">🎯 78</div>
+            <div class="app-time">3天前</div>
+          </div>
+        </div>
+      </div>
+      <div class="app-status-row">
+        <div class="app-status"><div class="status-dot dot-viewed"></div><span style="color:var(--text-muted);">已查看</span></div>
+        <div style="font-size:12px;color:var(--text-muted);">期望薪资 3000-5000元</div>
+      </div>
+      <div class="app-actions">
+        <div class="app-action-time">投递于 3天前</div>
+        <button class="app-btn app-btn-outline" onclick="viewResume()">查看简历</button>
+        <button class="app-btn app-btn-reject" onclick="rejectApp(this)">不合适</button>
+        <button class="app-btn app-btn-invite" onclick="inviteApp(this)">邀面试</button>
+      </div>
+    </div>
+
+    <!-- 投递卡片 4：已通过 -->
+    <div class="app-card" style="opacity:.75;">
+      <div class="app-card-body">
+        <div class="app-job-chip">📋 客服专员（居家办公）</div>
+        <div class="app-top">
+          <div class="app-avatar">👩‍💼</div>
+          <div class="app-info">
+            <div class="app-name-row">
+              <a href="resume-detail.html" class="app-name" style="text-decoration:none;color:var(--text);">陈芳</a>
+              <span class="tag tag-orange" style="font-size:11px;">肢体障碍</span>
+            </div>
+            <div class="app-meta">女 · 31岁 · 本科 · 5年经验</div>
+            <div class="app-tags">
+              <span class="tag tag-teal">全职</span>
+            </div>
+          </div>
+          <div class="app-right">
+            <div class="app-match">🎯 73</div>
+            <div class="app-time">1周前</div>
+          </div>
+        </div>
+      </div>
+      <div class="app-status-row">
+        <div class="app-status"><div class="status-dot dot-pass"></div><span style="color:var(--success);">已录用</span></div>
+        <div style="font-size:12px;color:var(--text-muted);">薪资已谈妥</div>
+      </div>
+      <div class="app-actions">
+        <div class="app-action-time">投递于 1周前</div>
+        <button class="app-btn app-btn-outline" onclick="viewResume()">查看简历</button>
+        <button class="app-btn app-btn-outline">联系</button>
+      </div>
+    </div>
+
+    <div class="gap-block"></div>
+  </div>
+
+  <script>
+    function switchTab(el) {
+      document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+    function filterByJob(val) {}
+    function viewResume() { window.location.href = 'resume-detail.html'; }
+    function inviteApp(btn) {
+      if (confirm('确认向该候选人发送面试邀请？')) {
+        btn.closest('.app-card').querySelector('.app-status').innerHTML = '<div class="status-dot dot-invited" style="width:6px;height:6px;border-radius:50%;background:var(--primary);"></div><span style="color:var(--primary);">已邀约面试</span>';
+        btn.textContent = '已邀约';
+        btn.disabled = true;
+        btn.style.opacity = '.5';
+      }
+    }
+    function rejectApp(btn) {
+      if (confirm('确认淘汰该候选人？')) {
+        btn.closest('.app-card').style.opacity = '.5';
+        alert('已标记为不合适，对方将收到通知。');
+      }
+    }
+    function passApp(btn) {
+      btn.closest('.app-card').querySelector('.app-status').innerHTML = '<div class="status-dot dot-pass" style="width:6px;height:6px;border-radius:50%;background:var(--success);"></div><span style="color:var(--success);">已录用</span>';
+      alert('已标记为通过，恭喜找到合适候选人！');
+    }
+    function batchMode() { alert('批量模式：可长按卡片选中，批量操作邀约/淘汰。'); }
+  </script>
+</body>
+</html>

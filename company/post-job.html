@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>发布岗位</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .form-block { background: #fff; padding: 16px; margin-bottom: 8px; }
+    .block-title {
+      font-size: 14px; font-weight: 700; color: var(--text);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .input-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* 标签选择 */
+    .tag-select { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-option {
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 13px; cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: #fff; color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .tag-option.selected {
+      background: var(--primary-light); border-color: var(--primary);
+      color: var(--primary); font-weight: 600;
+    }
+    /* 无障碍适配块 */
+    .a11y-section { background: var(--primary-light); border-radius: var(--radius-sm); padding: 12px; }
+    .a11y-label { font-size: 12px; color: var(--primary); font-weight: 700; margin-bottom: 8px; }
+    /* 福利标签 */
+    .welfare-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .welfare-option {
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; cursor: pointer;
+      border: 1px solid var(--border); background: #fff; color: var(--text-muted);
+    }
+    .welfare-option.selected { background: #ECFDF5; border-color: var(--success); color: var(--success); }
+    /* 底部提交栏 */
+    .submit-bar {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 390px; background: #fff;
+      border-top: 1px solid var(--border); padding: 10px 16px;
+      display: flex; gap: 10px; z-index: 100;
+    }
+    .btn-draft { flex: 1; height: 46px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 15px; font-weight: 600; cursor: pointer; }
+    .btn-publish { flex: 2; height: 46px; background: var(--primary); border: none; border-radius: var(--radius-sm); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+    /* 字数统计 */
+    .char-count { font-size: 11px; color: #94A3B8; text-align: right; margin-top: 4px; }
+    /* 有效期说明 */
+    .validity-note {
+      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+      background: var(--bg); border-radius: var(--radius-sm);
+      font-size: 13px; color: var(--text-muted);
+    }
+    .validity-note strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div style="padding-bottom:76px;">
+    <div class="topbar">
+      <a href="jobs.html" class="topbar-back">←</a>
+      <div class="topbar-title">发布岗位</div>
+      <div class="topbar-action">保存草稿</div>
+    </div>
+
+    <!-- 基本信息 -->
+    <div class="form-block">
+      <div class="block-title">📌 岗位基本信息</div>
+      <div class="input-group">
+        <label class="input-label">岗位名称<span class="req">*</span></label>
+        <input class="input-field" type="text" placeholder="如：客服专员、数据录入员" maxlength="50" id="job-name" oninput="updateCount(this,'jname-count',50)">
+        <div class="char-count"><span id="jname-count">0</span>/50</div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">岗位类型<span class="req">*</span></label>
+        <div class="tag-select" id="job-type">
+          <div class="tag-option" onclick="toggleTag(this,'job-type',false)">全职</div>
+          <div class="tag-option selected" onclick="toggleTag(this,'job-type',false)">居家办公</div>
+          <div class="tag-option" onclick="toggleTag(this,'job-type',false)">兼职</div>
+          <div class="tag-option" onclick="toggleTag(this,'job-type',false)">实习</div>
+        </div>
+      </div>
+
+      <div class="input-row2">
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label">薪资范围<span class="req">*</span></label>
+          <select class="select-field">
+            <option value="">请选择</option>
+            <option>2000-3000元</option>
+            <option>3000-4000元</option>
+            <option selected>4000-6000元</option>
+            <option>6000-8000元</option>
+            <option>8000-12000元</option>
+            <option>12000元以上</option>
+            <option>面议</option>
+          </select>
+        </div>
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label">招聘人数<span class="req">*</span></label>
+          <select class="select-field">
+            <option>1人</option>
+            <option>2-3人</option>
+            <option selected>3-5人</option>
+            <option>5-10人</option>
+            <option>10人以上</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 工作地点 -->
+    <div class="form-block">
+      <div class="block-title">📍 工作地点</div>
+      <div class="input-row2">
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label">所在区县<span class="req">*</span></label>
+          <select class="select-field">
+            <option selected>渝中区</option>
+            <option>江北区</option>
+            <option>沙坪坝区</option>
+            <option>九龙坡区</option>
+            <option>南岸区</option>
+            <option>渝北区</option>
+          </select>
+        </div>
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label">详细地址</label>
+          <input class="input-field" type="text" placeholder="街道/楼层等">
+        </div>
+      </div>
+    </div>
+
+    <!-- 任职要求 -->
+    <div class="form-block">
+      <div class="block-title">📋 任职要求</div>
+      <div class="input-row2">
+        <div class="input-group" style="margin-bottom:10px;">
+          <label class="input-label">学历要求</label>
+          <select class="select-field">
+            <option selected>不限</option>
+            <option>高中/中专</option>
+            <option>大专</option>
+            <option>本科</option>
+            <option>研究生</option>
+          </select>
+        </div>
+        <div class="input-group" style="margin-bottom:10px;">
+          <label class="input-label">工作经验</label>
+          <select class="select-field">
+            <option selected>不限</option>
+            <option>无经验</option>
+            <option>1年以上</option>
+            <option>3年以上</option>
+            <option>5年以上</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">技能要求（最多10个）</label>
+        <div class="tag-select" id="skill-tags">
+          <div class="tag-option selected" onclick="toggleTag(this,'skill-tags',true)">Office办公</div>
+          <div class="tag-option selected" onclick="toggleTag(this,'skill-tags',true)">沟通能力</div>
+          <div class="tag-option" onclick="toggleTag(this,'skill-tags',true)">数据分析</div>
+          <div class="tag-option" onclick="toggleTag(this,'skill-tags',true)">客户服务</div>
+          <div class="tag-option" onclick="toggleTag(this,'skill-tags',true)">文案写作</div>
+          <div class="tag-option" onclick="toggleTag(this,'skill-tags',true)">普通话</div>
+          <div class="tag-option" onclick="toggleTag(this,'skill-tags',true)">+ 自定义</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 残疾适配（影响AI匹配权重） -->
+    <div class="form-block">
+      <div class="block-title">♿ 残疾适配信息 <span style="font-size:12px;color:var(--text-muted);font-weight:400;">（选填，影响 AI 匹配精度）</span></div>
+      <div class="a11y-section">
+        <div class="input-group" style="margin-bottom:10px;">
+          <label class="input-label" style="font-size:13px;">可接受残疾类型</label>
+          <div class="tag-select" id="disability-tags">
+            <div class="tag-option selected" onclick="toggleTag(this,'disability-tags',true)" style="font-size:12px;">不限</div>
+            <div class="tag-option" onclick="toggleTag(this,'disability-tags',true)" style="font-size:12px;">视力障碍</div>
+            <div class="tag-option selected" onclick="toggleTag(this,'disability-tags',true)" style="font-size:12px;">肢体障碍</div>
+            <div class="tag-option" onclick="toggleTag(this,'disability-tags',true)" style="font-size:12px;">听力障碍</div>
+            <div class="tag-option" onclick="toggleTag(this,'disability-tags',true)" style="font-size:12px;">言语障碍</div>
+            <div class="tag-option" onclick="toggleTag(this,'disability-tags',true)" style="font-size:12px;">精神残疾</div>
+          </div>
+        </div>
+        <div class="input-group" style="margin-bottom:10px;">
+          <label class="input-label" style="font-size:13px;">可接受残疾等级</label>
+          <select class="select-field" style="height:40px;font-size:13px;">
+            <option>不限</option>
+            <option>一至四级均可</option>
+            <option>三至四级（轻度）</option>
+          </select>
+        </div>
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label" style="font-size:13px;">工作环境无障碍设施</label>
+          <div class="tag-select" id="a11y-tags">
+            <div class="tag-option selected" onclick="toggleTag(this,'a11y-tags',true)" style="font-size:12px;">支持居家办公</div>
+            <div class="tag-option selected" onclick="toggleTag(this,'a11y-tags',true)" style="font-size:12px;">无障碍电梯</div>
+            <div class="tag-option" onclick="toggleTag(this,'a11y-tags',true)" style="font-size:12px;">无障碍卫生间</div>
+            <div class="tag-option" onclick="toggleTag(this,'a11y-tags',true)" style="font-size:12px;">无障碍通道</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 岗位描述 -->
+    <div class="form-block">
+      <div class="block-title">📝 岗位描述</div>
+      <div class="input-group">
+        <label class="input-label">岗位职责<span class="req">*</span></label>
+        <textarea class="textarea-field" rows="5" maxlength="2000" placeholder="请描述该岗位的主要工作内容…" id="job-desc" oninput="updateCount(this,'jdesc-count',2000)">负责通过在线聊天工具解答客户咨询，处理投诉与建议；维护客户关系，提升满意度；完成岗位相关报表整理。</textarea>
+        <div class="char-count"><span id="jdesc-count">68</span>/2000</div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">公司介绍</label>
+        <textarea class="textarea-field" rows="3" maxlength="1000" placeholder="可填写公司背景、文化、团队介绍等…"></textarea>
+      </div>
+    </div>
+
+    <!-- 福利待遇 -->
+    <div class="form-block">
+      <div class="block-title">🎁 福利待遇</div>
+      <div class="welfare-tags">
+        <div class="welfare-option selected" onclick="this.classList.toggle('selected')">五险一金</div>
+        <div class="welfare-option selected" onclick="this.classList.toggle('selected')">弹性上下班</div>
+        <div class="welfare-option" onclick="this.classList.toggle('selected')">餐补</div>
+        <div class="welfare-option selected" onclick="this.classList.toggle('selected')">交通补贴</div>
+        <div class="welfare-option" onclick="this.classList.toggle('selected')">带薪年假</div>
+        <div class="welfare-option" onclick="this.classList.toggle('selected')">生日福利</div>
+        <div class="welfare-option" onclick="this.classList.toggle('selected')">年终奖</div>
+        <div class="welfare-option" onclick="this.classList.toggle('selected')">定期体检</div>
+      </div>
+    </div>
+
+    <!-- 有效期说明 -->
+    <div style="padding:0 12px 8px;">
+      <div class="validity-note">
+        <span>ℹ️</span>
+        <span>非认证企业岗位有效期 <strong>30天</strong>，到期后自动下架。升级认证企业可享 <strong>90天</strong> 有效期。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部按钮 -->
+  <div class="submit-bar">
+    <button class="btn-draft">存草稿</button>
+    <button class="btn-publish" onclick="publishJob()">发布岗位</button>
+  </div>
+
+  <script>
+    function toggleTag(el, groupId, multi) {
+      if (!multi) {
+        document.querySelectorAll(`#${groupId} .tag-option`).forEach(t => t.classList.remove('selected'));
+      }
+      el.classList.toggle('selected');
+    }
+    function updateCount(el, countId, max) {
+      document.getElementById(countId).textContent = el.value.length;
+    }
+    function publishJob() {
+      alert('岗位发布成功！将在审核通过后展示给求职者。');
+      window.location.href = 'jobs.html';
+    }
+  </script>
+</body>
+</html>

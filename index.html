@@ -107,15 +107,27 @@
     <div class="hero-icon">♿</div>
     <div class="hero-title">残疾人就业平台</div>
     <div class="hero-sub">【平台全称待定】· 前端原型 v1.0</div>
-    <div class="hero-badge">残疾人求职端 · 手机端原型</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
+      <div class="hero-badge">残疾人求职端 · 手机端原型</div>
+      <div class="hero-badge" style="background:#F0FDFA;color:#0D9488;border-color:#99F6E4;">企业招聘端 · 手机端原型</div>
+    </div>
   </div>
 
-  <!-- 手机预览 -->
-  <div class="mobile-section">
-    <div class="section-label">📱 实时预览（首页）</div>
-    <div class="phone-frame">
-      <div class="phone-notch"></div>
-      <iframe class="phone-iframe" src="seeker/home.html" id="preview-frame" title="页面预览"></iframe>
+  <!-- 双端手机预览 -->
+  <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;width:100%;max-width:900px;margin-bottom:40px;">
+    <div class="mobile-section" style="flex:1;min-width:300px;max-width:420px;margin-bottom:0;">
+      <div class="section-label">📱 求职端预览</div>
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <iframe class="phone-iframe" src="seeker/home.html" id="preview-frame" title="求职端预览"></iframe>
+      </div>
+    </div>
+    <div class="mobile-section" style="flex:1;min-width:300px;max-width:420px;margin-bottom:0;">
+      <div class="section-label" style="color:#0D9488;">🏢 企业端预览</div>
+      <div class="phone-frame" style="border-color:#0D9488;">
+        <div class="phone-notch" style="background:#0D9488;"></div>
+        <iframe class="phone-iframe" src="company/home.html" id="company-frame" title="企业端预览"></iframe>
+      </div>
     </div>
   </div>
 
@@ -213,6 +225,102 @@
       </div>
     </div>
 
+    <!-- 企业端目录 -->
+    <div style="margin:24px 0 10px;padding:14px 16px;background:linear-gradient(90deg,#F0FDFA,#fff);border-radius:12px;border-left:4px solid #0D9488;">
+      <div style="font-size:16px;font-weight:800;color:#0D9488;margin-bottom:2px;">🏢 企业招聘端</div>
+      <div style="font-size:12px;color:#64748B;">企业 HR 使用 · 包含非认证/认证双状态</div>
+    </div>
+
+    <div class="cat-group">
+      <div class="cat-title" style="color:#0D9488;">🔐 企业注册 & 认证</div>
+      <div class="cards-row">
+        <a href="company/login.html" onclick="updateCompany('company/login.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">🔑</div>
+          <div class="page-card-name">企业登录</div>
+          <div class="page-card-desc">账号密码/手机验证码</div>
+          <div class="page-card-file">company/login.html</div>
+        </a>
+        <a href="company/register.html" onclick="updateCompany('company/register.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">📝</div>
+          <div class="page-card-name">企业注册</div>
+          <div class="page-card-desc">三步骤：基本信息+HR联系人+营业执照</div>
+          <div class="page-card-file">company/register.html</div>
+        </a>
+        <a href="company/review.html" onclick="updateCompany('company/review.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">⏳</div>
+          <div class="page-card-name">审核中</div>
+          <div class="page-card-desc">进度环+步骤进度+失败示例</div>
+          <div class="page-card-file">company/review.html</div>
+        </a>
+        <a href="company/upgrade.html" onclick="updateCompany('company/upgrade.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">🏅</div>
+          <div class="page-card-name">升级认证</div>
+          <div class="page-card-desc">非认证/认证权益对比+申请流程</div>
+          <div class="page-card-file">company/upgrade.html</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="cat-group">
+      <div class="cat-title" style="color:#0D9488;">🏠 企业主要功能</div>
+      <div class="cards-row">
+        <a href="company/home.html" onclick="updateCompany('company/home.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">🏠</div>
+          <div class="page-card-name">企业工作台</div>
+          <div class="page-card-desc">双状态切换：非认证/认证企业仪表盘</div>
+          <div class="page-card-file">company/home.html</div>
+        </a>
+        <a href="company/jobs.html" onclick="updateCompany('company/jobs.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">📋</div>
+          <div class="page-card-name">我的岗位</div>
+          <div class="page-card-desc">状态管理+数据统计+刷新/下架</div>
+          <div class="page-card-file">company/jobs.html</div>
+        </a>
+        <a href="company/post-job.html" onclick="updateCompany('company/post-job.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">➕</div>
+          <div class="page-card-name">发布岗位</div>
+          <div class="page-card-desc">残疾适配信息+无障碍设施+福利标签</div>
+          <div class="page-card-file">company/post-job.html</div>
+        </a>
+        <a href="company/resumes.html" onclick="updateCompany('company/resumes.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">🔍</div>
+          <div class="page-card-name">找人才</div>
+          <div class="page-card-desc">AI匹配搜索+筛选+收藏+邀约</div>
+          <div class="page-card-file">company/resumes.html</div>
+        </a>
+        <a href="company/resume-detail.html" onclick="updateCompany('company/resume-detail.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">📄</div>
+          <div class="page-card-name">候选人简历</div>
+          <div class="page-card-desc">5维AI匹配分析+残疾情况+工作经历</div>
+          <div class="page-card-file">company/resume-detail.html</div>
+        </a>
+        <a href="company/applications.html" onclick="updateCompany('company/applications.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">📮</div>
+          <div class="page-card-name">收到的投递</div>
+          <div class="page-card-desc">状态管理+邀约/通过/淘汰操作</div>
+          <div class="page-card-file">company/applications.html</div>
+        </a>
+        <a href="company/messages.html" onclick="updateCompany('company/messages.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">💬</div>
+          <div class="page-card-name">消息中心</div>
+          <div class="page-card-desc">候选人对话+系统通知+平台公告</div>
+          <div class="page-card-file">company/messages.html</div>
+        </a>
+        <a href="company/ai-chat.html" onclick="updateCompany('company/ai-chat.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">🤖</div>
+          <div class="page-card-name">AI 招聘助手</div>
+          <div class="page-card-desc">投递分析+人才推荐+政策查询</div>
+          <div class="page-card-file">company/ai-chat.html</div>
+        </a>
+        <a href="company/profile.html" onclick="updateCompany('company/profile.html')" class="page-card" style="border-color:transparent;" onmouseover="this.style.borderColor='#0D9488'" onmouseout="this.style.borderColor='transparent'">
+          <div class="page-card-icon">🏢</div>
+          <div class="page-card-name">企业中心</div>
+          <div class="page-card-desc">企业信息+账号管理+资质认证</div>
+          <div class="page-card-file">company/profile.html</div>
+        </a>
+      </div>
+    </div>
+
     <div class="cat-group">
       <div class="cat-title">♿ 无障碍特性</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
@@ -257,6 +365,10 @@
   <script>
     function updatePreview(url) {
       document.getElementById('preview-frame').src = url;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function updateCompany(url) {
+      document.getElementById('company-frame').src = url;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   </script>

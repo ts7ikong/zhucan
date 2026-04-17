@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>申请认证企业</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .upg-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 52px; border-bottom: 1px solid var(--border); }
+    .upg-topbar a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .upg-topbar-title { font-size: 17px; font-weight: 700; }
+
+    /* 对比卡片 */
+    .compare-section { padding: 16px 12px 0; }
+    .compare-title { font-size: 15px; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 14px; }
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .plan-card { border-radius: var(--radius); border: 2px solid var(--border); overflow: hidden; }
+    .plan-card.active { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+    .plan-header { padding: 14px 12px 10px; text-align: center; }
+    .plan-header.basic { background: var(--bg); }
+    .plan-header.cert { background: linear-gradient(135deg, var(--primary) 0%, #0F766E 100%); color: #fff; }
+    .plan-name { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .plan-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+    .badge-basic { background: #E2E8F0; color: #64748B; }
+    .badge-cert { background: rgba(255,255,255,.25); color: #fff; }
+    .plan-price { font-size: 13px; margin-top: 6px; opacity: .8; }
+    .plan-body { padding: 10px 12px; }
+    .plan-feature { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-muted); margin-bottom: 7px; }
+    .plan-feature:last-child { margin-bottom: 0; }
+    .pf-icon { font-size: 13px; flex-shrink: 0; }
+    .plan-feature.highlight { color: var(--primary); font-weight: 600; }
+
+    /* 认证权益大卡 */
+    .benefit-card {
+      background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%);
+      margin: 0 12px 12px; border-radius: var(--radius);
+      padding: 16px; color: #fff;
+    }
+    .bc-title { font-size: 15px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .bc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .bc-item { background: rgba(255,255,255,.15); border-radius: 10px; padding: 10px; text-align: center; }
+    .bc-num { font-size: 22px; font-weight: 900; }
+    .bc-lbl { font-size: 11px; opacity: .85; margin-top: 2px; }
+
+    /* 流程步骤 */
+    .steps-section { padding: 0 12px; margin-bottom: 12px; }
+    .steps-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .step-item { display: flex; gap: 12px; margin-bottom: 16px; }
+    .step-dot-col { display: flex; flex-direction: column; align-items: center; }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-line { flex: 1; width: 2px; background: var(--border); margin: 4px 0; }
+    .step-content { flex: 1; padding-top: 4px; }
+    .step-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* FAQ */
+    .faq-section { padding: 0 12px 16px; }
+    .faq-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .faq-item { background: #fff; border-radius: 8px; padding: 12px; margin-bottom: 8px; box-shadow: var(--shadow); cursor: pointer; }
+    .faq-q { font-size: 13px; font-weight: 600; color: var(--text); display: flex; justify-content: space-between; }
+    .faq-a { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-top: 8px; display: none; }
+
+    /* 底部按钮 */
+    .upg-bar {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 390px; background: #fff;
+      border-top: 1px solid var(--border); padding: 12px 16px; z-index: 100;
+    }
+    .upg-btn-main {
+      width: 100%; height: 50px; background: linear-gradient(90deg, var(--primary), #0F766E);
+      border: none; border-radius: var(--radius-sm); color: #fff;
+      font-size: 16px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .upg-btn-note { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div style="padding-bottom: 90px;">
+    <div class="upg-topbar">
+      <a href="home.html">←</a>
+      <div class="upg-topbar-title">升级认证企业</div>
+      <div></div>
+    </div>
+
+    <!-- 权益大卡 -->
+    <div class="benefit-card" style="margin-top:12px;">
+      <div class="bc-title">🏅 认证企业专属权益</div>
+      <div class="bc-grid">
+        <div class="bc-item"><div class="bc-num">50</div><div class="bc-lbl">岗位配额</div></div>
+        <div class="bc-item"><div class="bc-num">90天</div><div class="bc-lbl">岗位有效期</div></div>
+        <div class="bc-item"><div class="bc-num">TOP</div><div class="bc-lbl">搜索排名优先</div></div>
+        <div class="bc-item"><div class="bc-num">无限</div><div class="bc-lbl">简历查看</div></div>
+      </div>
+    </div>
+
+    <!-- 对比 -->
+    <div class="compare-section">
+      <div class="compare-title">权益对比</div>
+      <div class="compare-grid">
+        <div class="plan-card">
+          <div class="plan-header basic">
+            <div class="plan-name">非认证企业</div>
+            <span class="plan-badge badge-basic">当前状态</span>
+            <div class="plan-price">免费</div>
+          </div>
+          <div class="plan-body">
+            <div class="plan-feature"><span class="pf-icon">📋</span>岗位配额 5个</div>
+            <div class="plan-feature"><span class="pf-icon">⏳</span>有效期 30天</div>
+            <div class="plan-feature"><span class="pf-icon">🔍</span>简历查看受限</div>
+            <div class="plan-feature"><span class="pf-icon">📊</span>基础AI匹配</div>
+            <div class="plan-feature" style="color:#94A3B8;"><span class="pf-icon">❌</span>搜索置顶</div>
+            <div class="plan-feature" style="color:#94A3B8;"><span class="pf-icon">❌</span>专属客服</div>
+          </div>
+        </div>
+        <div class="plan-card active">
+          <div class="plan-header cert">
+            <div class="plan-name">认证企业</div>
+            <span class="plan-badge badge-cert">🏅 推荐</span>
+            <div class="plan-price">资质审核通过后免费</div>
+          </div>
+          <div class="plan-body">
+            <div class="plan-feature highlight"><span class="pf-icon">📋</span>岗位配额 50个</div>
+            <div class="plan-feature highlight"><span class="pf-icon">⏳</span>有效期 90天</div>
+            <div class="plan-feature highlight"><span class="pf-icon">🔍</span>无限查看简历</div>
+            <div class="plan-feature highlight"><span class="pf-icon">📊</span>高级AI推荐</div>
+            <div class="plan-feature highlight"><span class="pf-icon">⭐</span>搜索结果置顶</div>
+            <div class="plan-feature highlight"><span class="pf-icon">🎯</span>专属就业顾问</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 申请流程 -->
+    <div class="steps-section">
+      <div class="steps-title">📋 认证申请流程</div>
+      <div class="step-item">
+        <div class="step-dot-col">
+          <div class="step-dot">1</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">提交认证材料</div>
+          <div class="step-desc">上传营业执照副本、法人身份证、残保金缴纳证明（选填）</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-dot-col">
+          <div class="step-dot">2</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">平台人工审核</div>
+          <div class="step-desc">审核周期 1-3个工作日，审核通过后短信通知</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-dot-col">
+          <div class="step-dot">3</div>
+        </div>
+        <div class="step-content">
+          <div class="step-title">升级成功，享受全部权益</div>
+          <div class="step-desc">账号自动升级为认证企业，立即享受50个岗位配额和优先展示权益</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <div class="faq-title">常见问题</div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">认证企业是否收费？<span>▼</span></div>
+        <div class="faq-a">目前认证企业资质完全免费，只需提交企业资质材料通过审核即可升级。平台以服务残疾人就业为核心，不向企业方收取费用。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">哪些材料是必须提交的？<span>▼</span></div>
+        <div class="faq-a">必须提交：①有效期内的营业执照副本；②企业法人身份证（正反面）。建议额外提供残保金缴纳记录，有助于提升审核通过率。</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">认证后岗位会自动置顶展示吗？<span>▼</span></div>
+        <div class="faq-a">是的，认证企业发布的岗位在同等条件下享有搜索结果优先展示权益，同时AI推荐系统也会优先向求职者推送认证企业岗位。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部按钮 -->
+  <div class="upg-bar">
+    <button class="upg-btn-main" onclick="applyUpgrade()">
+      🏅 立即申请认证升级
+    </button>
+    <div class="upg-btn-note">资质审核通过即可免费升级，审核周期1-3个工作日</div>
+  </div>
+
+  <script>
+    function toggleFaq(item) {
+      const ans = item.querySelector('.faq-a');
+      const arrow = item.querySelector('.faq-q span');
+      const isOpen = ans.style.display === 'block';
+      ans.style.display = isOpen ? 'none' : 'block';
+      arrow.textContent = isOpen ? '▼' : '▲';
+    }
+    function applyUpgrade() {
+      window.location.href = 'register.html';
+    }
+  </script>
+</body>
+</html>

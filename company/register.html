@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>企业注册</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .reg-header { padding: 16px 16px 0; background: #fff; border-bottom: 1px solid var(--border); }
+    .reg-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .reg-header-top a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .reg-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+    .reg-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+    .form-section { padding: 16px; background: #fff; margin-top: 8px; }
+    .form-section-title {
+      font-size: 13px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .input-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .sms-row { display: flex; gap: 8px; }
+    .sms-input { flex: 1; }
+    .sms-btn {
+      height: 46px; padding: 0 12px; background: var(--primary-light);
+      color: var(--primary); border: none; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    /* 营业执照上传 */
+    .license-upload {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 28px 16px; display: flex; flex-direction: column;
+      align-items: center; gap: 10px; cursor: pointer; background: var(--bg);
+      transition: border-color 0.2s; position: relative;
+    }
+    .license-upload.uploaded { border-style: solid; border-color: var(--success); background: #ECFDF5; }
+    .license-icon { font-size: 36px; }
+    .license-label { font-size: 15px; font-weight: 600; color: var(--text); }
+    .license-hint { font-size: 12px; color: var(--text-muted); text-align: center; }
+    .license-check {
+      position: absolute; top: 10px; right: 10px;
+      width: 24px; height: 24px; background: var(--success); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 13px; font-weight: 700;
+    }
+    .notice-box {
+      padding: 12px 14px; background: #FFFBEB; border: 1px solid var(--cert-border);
+      border-radius: var(--radius-sm); font-size: 12px; color: #92400E; line-height: 1.7;
+    }
+    .notice-box strong { font-weight: 700; }
+    .agree-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .agree-row input { margin-top: 2px; width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+    .agree-row a { color: var(--primary); text-decoration: none; }
+    .login-link { text-align: center; margin-top: 14px; font-size: 14px; color: var(--text-muted); }
+    .login-link a { color: var(--primary); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="page-no-nav">
+    <div class="reg-header">
+      <div class="reg-header-top">
+        <a href="login.html">←</a>
+        <div style="font-size:15px;font-weight:600;">企业注册</div>
+        <div style="width:20px;"></div>
+      </div>
+      <!-- 步骤条 -->
+      <div class="steps-row">
+        <div class="step-node">
+          <div class="step-circle active">1</div>
+          <div class="step-name active">基本信息</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-node">
+          <div class="step-circle">2</div>
+          <div class="step-name">上传执照</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-node">
+          <div class="step-circle">3</div>
+          <div class="step-name">等待审核</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 企业基本信息 -->
+    <div class="form-section">
+      <div class="form-section-title">🏢 企业基本信息</div>
+      <div class="input-group">
+        <label class="input-label">企业全称<span class="req">*</span></label>
+        <input class="input-field" type="text" placeholder="请输入营业执照上的企业全称">
+      </div>
+      <div class="input-group">
+        <label class="input-label">统一社会信用代码<span class="req">*</span></label>
+        <input class="input-field" type="text" placeholder="18位统一社会信用代码" maxlength="18">
+      </div>
+      <div class="input-row2">
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label">所属行业<span class="req">*</span></label>
+          <select class="select-field">
+            <option value="">请选择</option>
+            <option>互联网/IT</option>
+            <option>制造业</option>
+            <option>服务业</option>
+            <option>教育培训</option>
+            <option>金融/保险</option>
+            <option>医疗健康</option>
+            <option>零售/电商</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="input-group" style="margin-bottom:0;">
+          <label class="input-label">企业规模<span class="req">*</span></label>
+          <select class="select-field">
+            <option value="">请选择</option>
+            <option>1-50人</option>
+            <option>51-200人</option>
+            <option>201-500人</option>
+            <option>500-1000人</option>
+            <option>1000人以上</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 联系人信息 -->
+    <div class="form-section">
+      <div class="form-section-title">👤 HR 联系人信息</div>
+      <div class="input-group">
+        <label class="input-label">联系人姓名<span class="req">*</span></label>
+        <input class="input-field" type="text" placeholder="请输入HR姓名">
+      </div>
+      <div class="input-group">
+        <label class="input-label">联系手机<span class="req">*</span></label>
+        <div class="sms-row">
+          <input class="input-field sms-input" type="tel" placeholder="请输入手机号" maxlength="11">
+          <button class="sms-btn" onclick="sendSms(this)">发送验证码</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">验证码<span class="req">*</span></label>
+        <input class="input-field" type="number" placeholder="请输入6位验证码" maxlength="6">
+      </div>
+      <div class="input-group">
+        <label class="input-label">设置密码<span class="req">*</span></label>
+        <input class="input-field" type="password" placeholder="请设置登录密码（6-20位）">
+      </div>
+    </div>
+
+    <!-- 营业执照 -->
+    <div class="form-section">
+      <div class="form-section-title">📋 营业执照</div>
+      <div class="license-upload" id="license-box" onclick="uploadLicense()">
+        <div class="license-icon">📄</div>
+        <div class="license-label">点击上传营业执照</div>
+        <div class="license-hint">支持 jpg/png 格式，不超过 10MB<br>请确保执照清晰完整、在有效期内</div>
+      </div>
+      <div style="margin-top:10px;" class="notice-box">
+        <strong>⚠️ 审核说明：</strong>提交后平台将在 <strong>3-5个工作日</strong> 内完成审核。
+        审核通过后账号激活为「非认证企业」，可立即发布最多 5 个岗位。
+      </div>
+    </div>
+
+    <!-- 提交 -->
+    <div style="padding:16px;">
+      <div class="agree-row" style="margin-bottom:16px;">
+        <input type="checkbox" id="agree" checked>
+        <label for="agree">我已阅读并同意<a href="#">《企业服务协议》</a>和<a href="#">《隐私政策》</a></label>
+      </div>
+      <a href="review.html" class="btn btn-primary">提交注册申请</a>
+      <div class="login-link">已有账号？<a href="login.html">去登录</a></div>
+    </div>
+  </div>
+  <script>
+    let cd = 0;
+    function sendSms(btn) {
+      if (cd > 0) return; cd = 60; btn.disabled = true;
+      const t = setInterval(() => { cd--; btn.textContent = cd + 's后重发'; if (!cd) { clearInterval(t); btn.textContent = '发送验证码'; btn.disabled = false; } }, 1000);
+    }
+    function uploadLicense() {
+      const box = document.getElementById('license-box');
+      box.classList.add('uploaded');
+      box.innerHTML = `<div class="license-check">✓</div><div class="license-icon">📄</div><div class="license-label" style="color:var(--success);">营业执照已上传</div><div class="license-hint">营业执照_重庆联通.jpg · 2.4MB</div>`;
+    }
+  </script>
+</body>
+</html>

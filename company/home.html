@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>工作台 - 企业招聘端</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 头部 */
+    .home-header {
+      background: linear-gradient(135deg, #0F766E, #0D9488);
+      padding: 20px 16px 36px; position: relative; overflow: hidden;
+    }
+    .home-header::after {
+      content: ''; position: absolute; bottom: -24px; left: 0; right: 0;
+      height: 48px; background: var(--bg); border-radius: 24px 24px 0 0;
+    }
+    .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .company-logo {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0; cursor: pointer;
+    }
+    .header-right { display: flex; gap: 10px; align-items: center; }
+    .header-icon-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer; text-decoration: none;
+      position: relative;
+    }
+    .company-name { color: #fff; font-size: 18px; font-weight: 800; margin-bottom: 3px; }
+    .company-meta { color: rgba(255,255,255,0.8); font-size: 13px; margin-bottom: 10px; }
+    /* 非认证/认证切换演示 */
+    .state-switch {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    }
+    .state-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .state-uncert { background: rgba(255,255,255,0.15); color: #fff; }
+    .state-cert { background: #FDE68A; color: #92400E; }
+
+    /* 统计卡（悬浮） */
+    .stat-float {
+      margin: -12px 12px 0; position: relative; z-index: 10;
+      background: #fff; border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      display: grid; grid-template-columns: repeat(3, 1fr);
+    }
+    .sf-item {
+      padding: 14px 8px; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; border-right: 1px solid var(--border);
+      text-decoration: none;
+    }
+    .sf-item:last-child { border-right: none; }
+    .sf-num { font-size: 22px; font-weight: 800; line-height: 1; }
+    .sf-label { font-size: 12px; color: var(--text-muted); }
+
+    /* 岗位配额条 */
+    .quota-card {
+      margin: 10px 12px 0; background: #fff;
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 16px;
+    }
+    .quota-top {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
+    .quota-label { font-size: 14px; font-weight: 700; color: var(--text); }
+    .quota-count { font-size: 13px; font-weight: 700; }
+    .quota-count.warn { color: var(--warning); }
+    .quota-count.full { color: var(--error); }
+    .quota-count.ok { color: var(--primary); }
+    .quota-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+    /* 非认证升级横幅 */
+    .upgrade-card {
+      margin: 10px 12px 0;
+      background: linear-gradient(135deg, #1D4ED8, #4F46E5);
+      border-radius: var(--radius); padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer; text-decoration: none;
+    }
+    .upgrade-icon { font-size: 28px; flex-shrink: 0; }
+    .upgrade-body { flex: 1; color: #fff; }
+    .upgrade-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+    .upgrade-desc { font-size: 12px; opacity: 0.85; }
+    .upgrade-arrow { color: rgba(255,255,255,0.7); font-size: 20px; }
+
+    /* 快捷功能 */
+    .quick-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 14px 12px;
+    }
+    .quick-item { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; cursor: pointer; }
+    .quick-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .qi-teal { background: var(--primary-light); }
+    .qi-blue { background: var(--accent-light); }
+    .qi-orange { background: #FFF7ED; }
+    .qi-green { background: #ECFDF5; }
+    .qi-purple { background: #F5F3FF; }
+    .qi-yellow { background: #FEFCE8; }
+    .qi-red { background: #FEF2F2; }
+    .qi-gray { background: #F1F5F9; }
+    .quick-label { font-size: 11px; color: var(--text); font-weight: 500; text-align: center; }
+
+    /* 最新投递 */
+    .app-card {
+      margin: 0 12px 8px; background: #fff;
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 13px 14px; cursor: pointer; text-decoration: none; display: block;
+    }
+    .app-card:active { opacity: 0.9; }
+    .ac-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .ac-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .ac-job { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+    .ac-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+    .ac-footer { display: flex; justify-content: space-between; align-items: center; }
+    .ac-time { font-size: 11px; color: #94A3B8; }
+    .ac-match { font-size: 12px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 10px; }
+    .ac-action { padding: 5px 12px; background: var(--primary); color: #fff; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+
+    /* AI 悬浮 */
+    .ai-float {
+      position: fixed; bottom: calc(var(--nav-h) + 16px); right: 14px;
+      width: 52px; height: 52px; background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; box-shadow: 0 4px 14px rgba(79,70,229,0.4); z-index: 99; text-decoration: none;
+    }
+
+    /* 认证企业专属样式 */
+    .cert-quota-card {
+      margin: 10px 12px 0; background: linear-gradient(135deg, var(--cert-bg), #FEF9C3);
+      border: 1px solid var(--cert-border); border-radius: var(--radius); padding: 14px 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- 头部 -->
+    <div class="home-header">
+      <div class="header-top">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="company-logo">🏢</div>
+          <div>
+            <div class="company-name">重庆联通服务有限公司</div>
+            <div class="company-meta">互联网·通信 · 500-1000人</div>
+          </div>
+        </div>
+        <div class="header-right">
+          <a href="messages.html" class="header-icon-btn" style="color:#fff;">💬
+            <div style="position:absolute;top:0;right:0;width:10px;height:10px;background:var(--error);border-radius:50%;border:2px solid transparent;"></div>
+          </a>
+          <a href="profile.html" class="header-icon-btn" style="color:#fff;">⚙️</a>
+        </div>
+      </div>
+      <!-- 状态切换（演示用） -->
+      <div class="state-switch">
+        <div class="state-tag state-uncert" id="btn-uncert" onclick="switchState('uncert')">▶ 非认证企业（当前）</div>
+        <div class="state-tag state-cert" id="btn-cert" onclick="switchState('cert')">⭐ 切换认证企业视图</div>
+      </div>
+    </div>
+
+    <!-- ===== 非认证状态 ===== -->
+    <div id="view-uncert">
+      <!-- 统计 -->
+      <div class="stat-float">
+        <a href="jobs.html" class="sf-item" style="text-decoration:none;">
+          <div class="sf-num" style="color:var(--primary);">3</div>
+          <div class="sf-label">在招岗位</div>
+        </a>
+        <a href="applications.html" class="sf-item" style="text-decoration:none;">
+          <div class="sf-num" style="color:var(--accent);">12</div>
+          <div class="sf-label">收到投递</div>
+        </a>
+        <a href="resumes.html" class="sf-item" style="text-decoration:none;">
+          <div class="sf-num" style="color:var(--success);">5</div>
+          <div class="sf-label">收藏简历</div>
+        </a>
+      </div>
+
+      <!-- 岗位配额 -->
+      <div class="quota-card">
+        <div class="quota-top">
+          <div class="quota-label">岗位配额使用</div>
+          <div class="quota-count warn">3 / 5 个</div>
+        </div>
+        <div class="limit-bar">
+          <div class="limit-fill limit-warn" style="width:60%;"></div>
+        </div>
+        <div class="quota-hint">非认证企业最多发布 5 个在招岗位，<span style="color:var(--accent);font-weight:600;cursor:pointer;" onclick="switchState('cert')">升级认证企业</span>最多 50 个</div>
+      </div>
+
+      <!-- 升级横幅 -->
+      <a href="upgrade.html" class="upgrade-card" style="text-decoration:none;">
+        <div class="upgrade-icon">⭐</div>
+        <div class="upgrade-body">
+          <div class="upgrade-title">升级认证企业</div>
+          <div class="upgrade-desc">最多50个岗位 · 搜索排序优先 · 认证标识展示</div>
+        </div>
+        <div class="upgrade-arrow">›</div>
+      </a>
+    </div>
+
+    <!-- ===== 认证企业状态 ===== -->
+    <div id="view-cert" style="display:none;">
+      <div class="stat-float">
+        <a href="jobs.html" class="sf-item" style="text-decoration:none;">
+          <div class="sf-num" style="color:var(--primary);">8</div>
+          <div class="sf-label">在招岗位</div>
+        </a>
+        <a href="applications.html" class="sf-item" style="text-decoration:none;">
+          <div class="sf-num" style="color:var(--accent);">34</div>
+          <div class="sf-label">收到投递</div>
+        </a>
+        <a href="resumes.html" class="sf-item" style="text-decoration:none;">
+          <div class="sf-num" style="color:var(--success);">17</div>
+          <div class="sf-label">收藏简历</div>
+        </a>
+      </div>
+      <div class="cert-quota-card">
+        <div class="quota-top">
+          <div class="quota-label" style="display:flex;align-items:center;gap:6px;">
+            <span class="tag tag-gold">✓ 认证企业</span>
+            岗位配额
+          </div>
+          <div class="quota-count ok">8 / 50 个</div>
+        </div>
+        <div class="limit-bar">
+          <div class="limit-fill limit-safe" style="width:16%;"></div>
+        </div>
+        <div class="quota-hint">认证有效期至 <strong>2027-04-17</strong>，到期前30天系统自动提醒续费</div>
+      </div>
+      <div class="cert-banner" style="margin:10px 12px 0;">
+        <div class="cert-icon">⭐</div>
+        <div class="cert-text">
+          <div class="cert-title">认证企业特权已激活</div>
+          <div class="cert-desc">搜索排序优先 · 认证标识展示 · 50个岗位配额</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快捷功能（两种状态共用） -->
+    <div style="padding:14px 12px 4px;font-size:13px;font-weight:700;color:var(--text-muted);">快捷入口</div>
+    <div class="quick-grid">
+      <a href="post-job.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-teal">➕</div>
+        <div class="quick-label">发布岗位</div>
+      </a>
+      <a href="jobs.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-blue">📋</div>
+        <div class="quick-label">我的岗位</div>
+      </a>
+      <a href="applications.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-orange">📮</div>
+        <div class="quick-label">收到投递</div>
+      </a>
+      <a href="resumes.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-green">🔍</div>
+        <div class="quick-label">搜索简历</div>
+      </a>
+      <a href="ai-chat.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-purple">🤖</div>
+        <div class="quick-label">AI助招员</div>
+      </a>
+      <a href="messages.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-red">💬</div>
+        <div class="quick-label">消息中心</div>
+      </a>
+      <a href="upgrade.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-yellow">⭐</div>
+        <div class="quick-label">申请认证</div>
+      </a>
+      <a href="profile.html" class="quick-item" style="text-decoration:none;">
+        <div class="quick-icon qi-gray">⚙️</div>
+        <div class="quick-label">企业中心</div>
+      </a>
+    </div>
+
+    <!-- 最新收到的投递 -->
+    <div class="section-title">
+      <span>📮 最新投递</span>
+      <a href="applications.html" class="section-more">查看全部</a>
+    </div>
+
+    <a href="resume-detail.html" class="app-card">
+      <div class="ac-top">
+        <div class="ac-name">王小明</div>
+        <div class="ac-match">🎯 92分</div>
+      </div>
+      <div class="ac-job">投递岗位：客服专员（居家办公）</div>
+      <div class="ac-tags">
+        <span class="tag tag-orange">肢体障碍·三级</span>
+        <span class="tag tag-gray">大专</span>
+        <span class="tag tag-teal">2年经验</span>
+      </div>
+      <div class="ac-footer">
+        <div class="ac-time">刚刚</div>
+        <button class="ac-action">查看简历</button>
+      </div>
+    </a>
+
+    <a href="resume-detail.html" class="app-card">
+      <div class="ac-top">
+        <div class="ac-name">李梅</div>
+        <div class="ac-match">🎯 85分</div>
+      </div>
+      <div class="ac-job">投递岗位：数据录入专员</div>
+      <div class="ac-tags">
+        <span class="tag tag-orange">视力障碍·二级</span>
+        <span class="tag tag-gray">本科</span>
+        <span class="tag tag-teal">1年经验</span>
+      </div>
+      <div class="ac-footer">
+        <div class="ac-time">2小时前</div>
+        <button class="ac-action">查看简历</button>
+      </div>
+    </a>
+
+    <a href="resume-detail.html" class="app-card">
+      <div class="ac-top">
+        <div class="ac-name">张宇</div>
+        <div class="ac-match">🎯 78分</div>
+      </div>
+      <div class="ac-job">投递岗位：客服专员（居家办公）</div>
+      <div class="ac-tags">
+        <span class="tag tag-orange">听力障碍·三级</span>
+        <span class="tag tag-gray">高中</span>
+        <span class="tag tag-teal">无经验</span>
+      </div>
+      <div class="ac-footer">
+        <div class="ac-time">昨天</div>
+        <button class="ac-action">查看简历</button>
+      </div>
+    </a>
+
+    <div class="gap-block"></div>
+  </div>
+
+  <a href="ai-chat.html" class="ai-float">🤖</a>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item active">
+      <div class="nav-icon">🏠</div><div class="nav-label">工作台</div>
+    </a>
+    <a href="jobs.html" class="nav-item">
+      <div class="nav-icon">📋</div><div class="nav-label">岗位</div>
+    </a>
+    <a href="resumes.html" class="nav-item">
+      <div class="nav-icon">🔍</div><div class="nav-label">找人才</div>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <div class="nav-icon">🏢</div><div class="nav-label">企业中心</div>
+    </a>
+  </nav>
+
+  <script>
+    function switchState(s) {
+      const isUncert = s === 'uncert';
+      document.getElementById('view-uncert').style.display = isUncert ? 'block' : 'none';
+      document.getElementById('view-cert').style.display = isUncert ? 'none' : 'block';
+      document.getElementById('btn-uncert').textContent = isUncert ? '▶ 非认证企业（当前）' : '切换非认证企业视图';
+      document.getElementById('btn-cert').textContent = isUncert ? '⭐ 切换认证企业视图' : '▶ 认证企业（当前）';
+      document.getElementById('btn-uncert').style.background = isUncert ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)';
+      document.getElementById('btn-cert').style.background = isUncert ? '#FDE68A' : '#FEF08A';
+    }
+  </script>
+</body>
+</html>

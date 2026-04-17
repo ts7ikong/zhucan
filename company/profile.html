@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>企业中心</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 企业头部 */
+    .company-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #0F766E 100%);
+      padding: 24px 16px 28px; color: #fff; position: relative; overflow: hidden;
+    }
+    .company-hero::after { content:''; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%; background:rgba(255,255,255,.08); }
+    .hero-inner { display: flex; align-items: flex-start; gap: 14px; }
+    .company-logo {
+      width: 64px; height: 64px; border-radius: 16px;
+      background: rgba(255,255,255,.2); display: flex; align-items: center;
+      justify-content: center; font-size: 30px; flex-shrink: 0;
+    }
+    .company-info { flex: 1; }
+    .company-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .company-cert { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,.2); padding: 3px 10px; border-radius: 12px; font-size: 12px; margin-bottom: 8px; }
+    .company-meta { font-size: 12px; opacity: .85; line-height: 1.7; }
+    .hero-stats { display: flex; gap: 0; margin-top: 16px; }
+    .hero-stat { flex: 1; text-align: center; }
+    .hero-stat:not(:last-child) { border-right: 1px solid rgba(255,255,255,.25); }
+    .hs-num { font-size: 20px; font-weight: 900; }
+    .hs-lbl { font-size: 11px; opacity: .75; margin-top: 1px; }
+
+    /* 认证状态条 */
+    .cert-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; background: #FFFBEB; border-bottom: 1px solid var(--cert-border);
+    }
+    .cert-icon { font-size: 18px; }
+    .cert-text { flex: 1; font-size: 13px; color: #92400E; }
+    .cert-text strong { color: #78350F; }
+    .cert-btn { padding: 5px 12px; background: var(--warning); color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+    /* 菜单组 */
+    .menu-group { background: #fff; margin: 0 0 8px; }
+    .menu-group-title { font-size: 12px; color: var(--text-muted); font-weight: 600; padding: 12px 16px 6px; }
+    .menu-item { display: flex; align-items: center; padding: 14px 16px; border-top: 1px solid var(--border); cursor: pointer; text-decoration: none; }
+    .menu-item:first-of-type { border-top: none; }
+    .menu-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; margin-right: 12px; }
+    .mi-teal { background: var(--primary-light); }
+    .mi-blue { background: #EFF6FF; }
+    .mi-green { background: #ECFDF5; }
+    .mi-orange { background: #FFF7ED; }
+    .mi-gray { background: var(--bg); }
+    .mi-red { background: #FEF2F2; }
+    .menu-label { flex: 1; font-size: 14px; color: var(--text); }
+    .menu-label span { display: block; font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .menu-value { font-size: 12px; color: var(--text-muted); margin-right: 6px; }
+    .menu-arrow { color: var(--text-muted); font-size: 14px; }
+    .menu-badge { background: var(--error); color: #fff; border-radius: 8px; padding: 1px 6px; font-size: 10px; font-weight: 700; margin-right: 6px; }
+
+    /* 开关 */
+    .toggle-switch { width: 44px; height: 24px; background: #E2E8F0; border-radius: 12px; position: relative; cursor: pointer; flex-shrink: 0; }
+    .toggle-switch.on { background: var(--primary); }
+    .toggle-knob { position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: left .2s; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+    .toggle-switch.on .toggle-knob { left: 22px; }
+
+    .logout-btn { margin: 16px 12px; height: 48px; width: calc(100% - 24px); background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--error); font-size: 15px; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- 企业头部 -->
+    <div class="company-hero">
+      <div class="hero-inner">
+        <div class="company-logo">🏢</div>
+        <div class="company-info">
+          <div class="company-name">重庆联通科技有限公司</div>
+          <div class="company-cert" id="cert-label">🏅 认证企业</div>
+          <div class="company-meta">信息技术 · 100-500人 · 重庆渝中区</div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hs-num" id="stat-jobs">3</div><div class="hs-lbl">在招岗位</div></div>
+        <div class="hero-stat"><div class="hs-num">20</div><div class="hs-lbl">收到投递</div></div>
+        <div class="hero-stat"><div class="hs-num">8</div><div class="hs-lbl">面试邀约</div></div>
+        <div class="hero-stat"><div class="hs-num">2</div><div class="hs-lbl">已录用</div></div>
+      </div>
+    </div>
+
+    <!-- 认证升级提示（非认证时显示） -->
+    <div class="cert-banner" id="cert-banner" style="display:none;">
+      <div class="cert-icon">⚡</div>
+      <div class="cert-text">您当前为<strong>非认证企业</strong>，升级后可发布50个岗位，享受优先展示权益</div>
+      <button class="cert-btn" onclick="window.location.href='upgrade.html'">升级</button>
+    </div>
+
+    <!-- 企业信息 -->
+    <div class="menu-group">
+      <div class="menu-group-title">企业信息</div>
+      <div class="menu-item" onclick="editInfo('company-name')">
+        <div class="menu-icon mi-teal">🏢</div>
+        <div class="menu-label">企业名称<span>重庆联通科技有限公司</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="editInfo('industry')">
+        <div class="menu-icon mi-blue">🏭</div>
+        <div class="menu-label">所在行业<span>信息技术 / 互联网</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="editInfo('size')">
+        <div class="menu-icon mi-green">👥</div>
+        <div class="menu-label">公司规模<span>100-500人</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="editInfo('address')">
+        <div class="menu-icon mi-orange">📍</div>
+        <div class="menu-label">公司地址<span>重庆市渝中区某大厦10楼</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="editInfo('intro')">
+        <div class="menu-icon mi-gray">📝</div>
+        <div class="menu-label">公司介绍<span>已填写，点击编辑</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- 账号管理 -->
+    <div class="menu-group">
+      <div class="menu-group-title">账号管理</div>
+      <div class="menu-item" onclick="editInfo('hr-name')">
+        <div class="menu-icon mi-teal">👤</div>
+        <div class="menu-label">HR 姓名<span>李招聘</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="editInfo('phone')">
+        <div class="menu-icon mi-blue">📱</div>
+        <div class="menu-label">绑定手机<span>138****8888</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="editInfo('password')">
+        <div class="menu-icon mi-gray">🔐</div>
+        <div class="menu-label">修改密码</div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- 资质认证 -->
+    <div class="menu-group">
+      <div class="menu-group-title">资质认证</div>
+      <a href="upgrade.html" class="menu-item">
+        <div class="menu-icon mi-orange">🏅</div>
+        <div class="menu-label">认证状态<span id="cert-status-text">已认证企业</span></div>
+        <div class="menu-value" id="cert-status-badge" style="color:var(--primary);font-weight:700;">已认证</div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <div class="menu-item" onclick="viewLicense()">
+        <div class="menu-icon mi-green">📄</div>
+        <div class="menu-label">营业执照<span>有效期至 2030-12-31</span></div>
+        <div class="menu-value">已上传</div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- 设置 -->
+    <div class="menu-group">
+      <div class="menu-group-title">系统设置</div>
+      <div class="menu-item">
+        <div class="menu-icon mi-blue">🔔</div>
+        <div class="menu-label">新投递通知</div>
+        <div class="toggle-switch on" id="notify-toggle" onclick="toggleSwitch(this)">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon mi-teal">🤖</div>
+        <div class="menu-label">AI 候选人推荐</div>
+        <div class="toggle-switch on" id="ai-toggle" onclick="toggleSwitch(this)">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+      <div class="menu-item" onclick="window.location.href='ai-chat.html'">
+        <div class="menu-icon mi-orange">💬</div>
+        <div class="menu-label">AI 招聘助手</div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- 帮助与关于 -->
+    <div class="menu-group">
+      <div class="menu-group-title">帮助与关于</div>
+      <div class="menu-item" onclick="alert('使用帮助文档')">
+        <div class="menu-icon mi-gray">❓</div>
+        <div class="menu-label">使用帮助</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="alert('联系客服：400-xxx-xxxx')">
+        <div class="menu-icon mi-green">🎧</div>
+        <div class="menu-label">联系客服</div>
+        <div class="menu-value">工作日 9:00-18:00</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="alert('当前版本 v1.0.0')">
+        <div class="menu-icon mi-gray">ℹ️</div>
+        <div class="menu-label">关于【平台全称待定】<span>版本 v1.0.0</span></div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">退出登录</button>
+
+    <div class="gap-block"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">工作台</div></a>
+    <a href="jobs.html" class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">岗位</div></a>
+    <a href="resumes.html" class="nav-item"><div class="nav-icon">🔍</div><div class="nav-label">找人才</div></a>
+    <a href="profile.html" class="nav-item active"><div class="nav-icon">🏢</div><div class="nav-label">企业中心</div></a>
+  </nav>
+
+  <script>
+    function toggleSwitch(el) { el.classList.toggle('on'); }
+    function editInfo(field) { alert(`编辑「${field}」— 点击确认后保存`); }
+    function viewLicense() { alert('营业执照预览：重庆联通科技有限公司（模拟展示）'); }
+    function logout() {
+      if (confirm('确认退出登录？')) { window.location.href = 'login.html'; }
+    }
+
+    // 演示：根据认证状态调整UI
+    const isCert = true;
+    if (!isCert) {
+      document.getElementById('cert-banner').style.display = 'flex';
+      document.getElementById('cert-label').textContent = '非认证企业';
+      document.getElementById('cert-status-text').textContent = '非认证企业，点击升级';
+      document.getElementById('cert-status-badge').textContent = '去升级';
+      document.getElementById('cert-status-badge').style.color = 'var(--warning)';
+    }
+  </script>
+</body>
+</html>

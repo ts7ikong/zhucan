@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>审核中</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body { background: #fff; }
+    .review-page {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 60px 24px 40px;
+    }
+    /* 动态进度圆 */
+    .progress-ring-wrap {
+      width: 120px; height: 120px; position: relative;
+      margin-bottom: 28px;
+    }
+    .progress-ring-wrap svg { transform: rotate(-90deg); }
+    .ring-center {
+      position: absolute; inset: 0; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+    }
+    .ring-icon { font-size: 36px; }
+    /* 审核状态卡 */
+    .status-card {
+      background: var(--bg); border-radius: var(--radius);
+      padding: 20px; width: 100%; margin-bottom: 20px;
+    }
+    .status-title { font-size: 20px; font-weight: 800; color: var(--text); text-align: center; margin-bottom: 6px; }
+    .status-sub { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.6; }
+    /* 步骤 */
+    .review-steps { width: 100%; margin-bottom: 24px; }
+    .review-step {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+    }
+    .review-step:last-child { border-bottom: none; }
+    .rs-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .rs-dot.done { background: var(--success); color: #fff; }
+    .rs-dot.active { background: var(--primary); color: #fff; }
+    .rs-dot.pending { background: var(--bg); border: 2px solid var(--border); color: var(--text-muted); }
+    .rs-body { flex: 1; }
+    .rs-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .rs-desc { font-size: 12px; color: var(--text-muted); }
+    .rs-time { font-size: 11px; color: #94A3B8; margin-top: 2px; }
+    /* 提示信息 */
+    .info-box {
+      background: var(--primary-light); border: 1px solid #99F6E4;
+      border-radius: var(--radius-sm); padding: 12px 14px;
+      font-size: 13px; color: #0F766E; line-height: 1.7;
+      width: 100%; margin-bottom: 20px;
+    }
+    .info-box li { margin-left: 16px; margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+  <div class="review-page">
+    <!-- 动态图标 -->
+    <div class="progress-ring-wrap">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+        <circle cx="60" cy="60" r="52" fill="none" stroke="#0D9488" stroke-width="8"
+          stroke-dasharray="326.73" stroke-dashoffset="163.36" stroke-linecap="round">
+          <animateTransform attributeName="transform" type="rotate" from="-90 60 60" to="270 60 60" dur="3s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+      <div class="ring-center"><div class="ring-icon">🏢</div></div>
+    </div>
+
+    <div class="status-card">
+      <div class="status-title">审核进行中…</div>
+      <div class="status-sub">
+        您的企业注册申请已提交，平台将在
+        <strong>3-5个工作日</strong>内完成审核，
+        审核结果将以短信通知您。
+      </div>
+    </div>
+
+    <!-- 进度步骤 -->
+    <div class="review-steps">
+      <div class="review-step">
+        <div class="rs-dot done">✓</div>
+        <div class="rs-body">
+          <div class="rs-title">企业信息填写完成</div>
+          <div class="rs-desc">企业全称、信用代码、联系人信息</div>
+          <div class="rs-time">2026-04-17 10:32</div>
+        </div>
+      </div>
+      <div class="review-step">
+        <div class="rs-dot done">✓</div>
+        <div class="rs-body">
+          <div class="rs-title">营业执照上传完成</div>
+          <div class="rs-desc">营业执照_重庆联通.jpg</div>
+          <div class="rs-time">2026-04-17 10:33</div>
+        </div>
+      </div>
+      <div class="review-step">
+        <div class="rs-dot active">⏳</div>
+        <div class="rs-body">
+          <div class="rs-title">平台人工审核中</div>
+          <div class="rs-desc">预计 3-5 个工作日，审核通过后短信通知</div>
+          <div class="rs-time">进行中…</div>
+        </div>
+      </div>
+      <div class="review-step">
+        <div class="rs-dot pending">4</div>
+        <div class="rs-body">
+          <div class="rs-title">账号激活</div>
+          <div class="rs-desc">审核通过后自动激活为「非认证企业」账号</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>审核通过后您可以：</strong>
+      <ul>
+        <li>发布最多 5 个招聘岗位（有效期30天）</li>
+        <li>搜索残疾人求职者简历</li>
+        <li>使用 AI 智能人才推荐</li>
+        <li>升级认证企业享受更多权益</li>
+      </ul>
+    </div>
+
+    <!-- 如果审核不通过，显示这个（切换演示） -->
+    <button onclick="showFail()" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;margin-bottom:12px;">
+      查看「审核未通过」状态示例
+    </button>
+
+    <a href="login.html" class="btn btn-outline" style="max-width:320px;">返回登录页</a>
+  </div>
+
+  <!-- 审核失败状态（隐藏） -->
+  <div id="fail-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;">
+    <div style="background:#fff;width:100%;border-radius:20px 20px 0 0;padding:24px;">
+      <div style="font-size:40px;text-align:center;margin-bottom:12px;">❌</div>
+      <div style="font-size:18px;font-weight:800;color:var(--error);text-align:center;margin-bottom:8px;">审核未通过</div>
+      <div style="font-size:14px;color:var(--text-muted);text-align:center;margin-bottom:16px;line-height:1.6;">
+        未通过原因：<strong style="color:var(--error);">营业执照图片模糊，无法识别关键信息</strong>
+      </div>
+      <div style="background:#FEF2F2;border-radius:8px;padding:12px;font-size:13px;color:#B91C1C;margin-bottom:16px;line-height:1.7;">
+        请重新上传清晰的营业执照照片后提交，确保四角完整、文字清晰可读。
+      </div>
+      <button onclick="resubmit()" style="width:100%;height:48px;background:var(--primary);border:none;border-radius:8px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;">
+        重新提交
+      </button>
+      <button onclick="closeFail()" style="width:100%;height:44px;background:none;border:none;color:var(--text-muted);font-size:15px;cursor:pointer;margin-top:6px;">关闭</button>
+    </div>
+  </div>
+
+  <script>
+    function showFail() {
+      const m = document.getElementById('fail-modal');
+      m.style.display = 'flex';
+    }
+    function closeFail() { document.getElementById('fail-modal').style.display = 'none'; }
+    function resubmit() { window.location.href = 'register.html'; }
+  </script>
+</body>
+</html>
