@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>政策中心</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .policy-header {
+      background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%);
+      padding: 20px 16px 48px; position: relative; overflow: hidden;
+    }
+    .policy-header::after {
+      content: ''; position: absolute; bottom: -24px; left: 0; right: 0;
+      height: 48px; background: var(--bg); border-radius: 24px 24px 0 0;
+    }
+    .ph-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .ph-back { color: #fff; font-size: 20px; text-decoration: none; }
+    .ph-title { font-size: 17px; font-weight: 800; color: #fff; }
+    .ph-search {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.2); border-radius: 22px;
+      padding: 0 14px; height: 40px; border: 1.5px solid transparent;
+    }
+    .ph-search:focus-within { background: rgba(255,255,255,.3); border-color: rgba(255,255,255,.5); }
+    .ph-search input { flex: 1; border: none; background: transparent; color: #fff; font-size: 14px; outline: none; }
+    .ph-search input::placeholder { color: rgba(255,255,255,.65); }
+
+    /* 分类导航 */
+    .cat-scroll { display: flex; gap: 8px; padding: 10px 14px; overflow-x: auto; scrollbar-width: none; }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-chip {
+      padding: 5px 14px; border-radius: 18px; font-size: 12px; font-weight: 600;
+      white-space: nowrap; cursor: pointer; border: 1.5px solid var(--border);
+      background: #fff; color: var(--text-muted); flex-shrink: 0;
+    }
+    .cat-chip.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+    /* 置顶提示 */
+    .top-tip {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin: 0 12px 10px; background: #FFFBEB; border: 1px solid #FDE68A;
+      border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+    .top-tip-icon { font-size: 18px; flex-shrink: 0; }
+    .top-tip-text { font-size: 12px; color: #92400E; line-height: 1.6; }
+    .top-tip-text strong { color: #78350F; }
+
+    /* 政策卡 */
+    .policy-card {
+      margin: 0 12px 10px; background: #fff;
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    }
+    .pc-header { padding: 14px 14px 10px; }
+    .pc-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+    .pc-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; flex: 1; }
+    .pc-amount { font-size: 15px; font-weight: 900; color: #EF4444; flex-shrink: 0; }
+    .pc-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .pc-summary { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .pc-summary strong { color: var(--text); }
+
+    /* 展开内容 */
+    .pc-detail { padding: 0 14px 14px; border-top: 1px solid var(--border); display: none; }
+    .pc-detail.open { display: block; padding-top: 12px; }
+    .detail-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .detail-label { font-size: 12px; color: var(--text-muted); width: 64px; flex-shrink: 0; padding-top: 1px; }
+    .detail-value { font-size: 13px; color: var(--text); line-height: 1.6; flex: 1; }
+    .apply-btn { display: block; margin-top: 12px; width: 100%; height: 42px; background: var(--primary); border: none; border-radius: var(--radius-sm); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+    .pc-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid var(--border); background: var(--bg); }
+    .pc-date { font-size: 11px; color: #94A3B8; }
+    .pc-toggle { font-size: 12px; color: var(--primary); font-weight: 600; cursor: pointer; }
+
+    /* 计算器浮窗 */
+    .calc-card { margin: 0 12px 10px; background: linear-gradient(135deg, var(--primary-light), #F0FDFA); border: 1px solid #99F6E4; border-radius: var(--radius); padding: 14px; }
+    .calc-title { font-size: 14px; font-weight: 800; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    .calc-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .calc-label { font-size: 12px; color: var(--text-muted); width: 80px; flex-shrink: 0; }
+    .calc-input { flex: 1; height: 36px; border: 1.5px solid var(--border); border-radius: 8px; padding: 0 10px; font-size: 13px; color: var(--text); outline: none; background: #fff; }
+    .calc-input:focus { border-color: var(--primary); }
+    .calc-result { background: #fff; border-radius: var(--radius-sm); padding: 12px; margin-top: 4px; display: none; }
+    .calc-result.show { display: block; }
+    .calc-result-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+    .calc-result-row .val { font-weight: 700; color: var(--primary); }
+    .calc-btn { width: 100%; height: 40px; background: var(--primary); border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+
+    /* 顶部来源标注 */
+    .source-note { font-size: 11px; color: #94A3B8; padding: 4px 14px 8px; }
+
+    .section-title { padding: 12px 14px 6px; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="policy-header">
+      <div class="ph-topbar">
+        <a href="home.html" class="ph-back">←</a>
+        <div class="ph-title">政策中心</div>
+        <div style="width:20px;"></div>
+      </div>
+      <div class="ph-search">
+        <span style="color:rgba(255,255,255,.7);">🔍</span>
+        <input type="text" placeholder="搜索补贴政策、残保金…">
+      </div>
+    </div>
+
+    <!-- 分类导航 -->
+    <div class="cat-scroll">
+      <div class="cat-chip active" onclick="filterCat(this,'all')">全部</div>
+      <div class="cat-chip" onclick="filterCat(this,'subsidy')">就业补贴</div>
+      <div class="cat-chip" onclick="filterCat(this,'baojin')">残保金</div>
+      <div class="cat-chip" onclick="filterCat(this,'tax')">税收优惠</div>
+      <div class="cat-chip" onclick="filterCat(this,'social')">社保补贴</div>
+      <div class="cat-chip" onclick="filterCat(this,'train')">培训补贴</div>
+    </div>
+
+    <!-- 置顶提示 -->
+    <div class="top-tip">
+      <div class="top-tip-icon">💡</div>
+      <div class="top-tip-text">
+        <strong>企业雇用残疾人员工，可同时叠加享受多项补贴。</strong>
+        如同时满足就业补贴、社保补贴、残保金减免，综合收益显著。建议参考下方「补贴估算器」计算实际收益。
+      </div>
+    </div>
+
+    <!-- 补贴估算器 -->
+    <div class="calc-card">
+      <div class="calc-title">🧮 补贴快速估算器</div>
+      <div class="calc-row">
+        <div class="calc-label">残疾员工人数</div>
+        <input class="calc-input" type="number" id="calc-count" placeholder="如：2" min="1">
+      </div>
+      <div class="calc-row">
+        <div class="calc-label">员工月均工资</div>
+        <input class="calc-input" type="number" id="calc-salary" placeholder="如：5000" min="0">
+      </div>
+      <button class="calc-btn" onclick="calcSubsidy()">计算预估补贴</button>
+      <div class="calc-result" id="calc-result">
+        <div class="calc-result-row"><span>就业岗位补贴（/年）</span><span class="val" id="r-subsidy">—</span></div>
+        <div class="calc-result-row"><span>社保补贴（/年）</span><span class="val" id="r-social">—</span></div>
+        <div class="calc-result-row"><span>残保金减免估算</span><span class="val" id="r-baojin">—</span></div>
+        <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+        <div class="calc-result-row" style="font-weight:700;font-size:14px;">
+          <span>预估年综合收益</span><span style="color:#EF4444;font-size:16px;" id="r-total">—</span>
+        </div>
+        <div style="font-size:11px;color:#94A3B8;margin-top:6px;">* 仅供参考，实际金额以主管部门审核为准</div>
+      </div>
+    </div>
+
+    <div class="source-note">以下政策均基于重庆市现行规定，请以官方最新文件为准</div>
+
+    <!-- 政策1：就业岗位补贴 -->
+    <div class="policy-card" data-cat="subsidy">
+      <div class="pc-header">
+        <div class="pc-title-row">
+          <div class="pc-title">残疾人就业岗位补贴</div>
+          <div class="pc-amount">最高6000元/人·年</div>
+        </div>
+        <div class="pc-tags">
+          <span class="tag tag-teal">就业补贴</span>
+          <span class="tag tag-blue">企业申请</span>
+          <span class="tag tag-gray">按年发放</span>
+        </div>
+        <div class="pc-summary">
+          企业每招用1名持残疾人证的员工并签订1年以上劳动合同，可向区残联申请岗位补贴，<strong>每人每年最高6000元</strong>，连续补贴期不超过3年。
+        </div>
+      </div>
+      <div class="pc-detail" id="detail-1">
+        <div class="detail-row"><div class="detail-label">申请条件</div><div class="detail-value">① 与残疾员工签订1年以上劳动合同<br>② 按时足额缴纳社会保险<br>③ 员工持有效残疾人证或残疾军人证</div></div>
+        <div class="detail-row"><div class="detail-label">补贴标准</div><div class="detail-value">一至二级：6000元/人·年<br>三至四级：4000元/人·年</div></div>
+        <div class="detail-row"><div class="detail-label">申请方式</div><div class="detail-value">向所在区县残联提交材料，每年度集中受理一次</div></div>
+        <div class="detail-row"><div class="detail-label">所需材料</div><div class="detail-value">劳动合同复印件、社保缴纳记录、残疾人证复印件、银行账户信息</div></div>
+        <button class="apply-btn" onclick="alert('跳转至补贴申请官网：重庆市残疾人联合会')">了解如何申请 →</button>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-date">政策来源：重庆市残联 · 2026年更新</div>
+        <div class="pc-toggle" onclick="toggleDetail('detail-1',this)">展开详情 ▼</div>
+      </div>
+    </div>
+
+    <!-- 政策2：残保金减免 -->
+    <div class="policy-card" data-cat="baojin">
+      <div class="pc-header">
+        <div class="pc-title-row">
+          <div class="pc-title">残疾人就业保障金减免政策</div>
+          <div class="pc-amount">可全额免缴</div>
+        </div>
+        <div class="pc-tags">
+          <span class="tag tag-orange">残保金</span>
+          <span class="tag tag-teal">按比例免缴</span>
+          <span class="tag tag-gray">每年申报</span>
+        </div>
+        <div class="pc-summary">
+          企业按规定比例安置残疾人就业后，可相应减免残疾人就业保障金。安置比例达到1.5%时可<strong>全额免缴当年残保金</strong>。
+        </div>
+      </div>
+      <div class="pc-detail" id="detail-2">
+        <div class="detail-row"><div class="detail-label">缴纳基准</div><div class="detail-value">上年度在职员工年均工资 × 应安置人数差额</div></div>
+        <div class="detail-row"><div class="detail-label">免缴条件</div><div class="detail-value">在职残疾员工人数占在职员工总数 ≥ 1.5%，可全额免缴；低于1.5%按实际差额比例缴纳</div></div>
+        <div class="detail-row"><div class="detail-label">小微企业</div><div class="detail-value">在职员工不足30人的小微企业，免征残保金</div></div>
+        <div class="detail-row"><div class="detail-label">申报时间</div><div class="detail-value">每年4月1日至6月30日，向税务机关申报</div></div>
+        <div class="detail-row"><div class="detail-label">申报方式</div><div class="detail-value">通过电子税务局在线申报，或前往区县税务局办理</div></div>
+        <button class="apply-btn" onclick="alert('跳转至电子税务局申报入口')">前往电子税务局申报 →</button>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-date">政策来源：国家税务总局 · 2026年有效</div>
+        <div class="pc-toggle" onclick="toggleDetail('detail-2',this)">展开详情 ▼</div>
+      </div>
+    </div>
+
+    <!-- 政策3：社会保险补贴 -->
+    <div class="policy-card" data-cat="social">
+      <div class="pc-header">
+        <div class="pc-title-row">
+          <div class="pc-title">雇用残疾人社会保险补贴</div>
+          <div class="pc-amount">社保费50%补贴</div>
+        </div>
+        <div class="pc-tags">
+          <span class="tag tag-blue">社保补贴</span>
+          <span class="tag tag-teal">企业申请</span>
+        </div>
+        <div class="pc-summary">
+          企业为招用的残疾人员工缴纳的养老、医疗、失业保险，可申请<strong>最高50%的社保费用补贴</strong>，由人社部门核发。
+        </div>
+      </div>
+      <div class="pc-detail" id="detail-3">
+        <div class="detail-row"><div class="detail-label">补贴范围</div><div class="detail-value">企业缴纳部分：养老保险 + 医疗保险 + 失业保险</div></div>
+        <div class="detail-row"><div class="detail-label">补贴比例</div><div class="detail-value">最高按企业实际缴纳金额的50%补贴</div></div>
+        <div class="detail-row"><div class="detail-label">申请周期</div><div class="detail-value">按季度或年度申请，具体以区县人社局规定为准</div></div>
+        <div class="detail-row"><div class="detail-label">所需材料</div><div class="detail-value">社保缴纳凭证、残疾员工劳动合同、残疾人证明</div></div>
+        <button class="apply-btn" onclick="alert('跳转至重庆市人力资源和社会保障局官网')">了解申请流程 →</button>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-date">政策来源：重庆市人社局 · 2026年</div>
+        <div class="pc-toggle" onclick="toggleDetail('detail-3',this)">展开详情 ▼</div>
+      </div>
+    </div>
+
+    <!-- 政策4：税收优惠 -->
+    <div class="policy-card" data-cat="tax">
+      <div class="pc-header">
+        <div class="pc-title-row">
+          <div class="pc-title">雇用残疾人员增值税/所得税优惠</div>
+          <div class="pc-amount">按比例税收减免</div>
+        </div>
+        <div class="pc-tags">
+          <span class="tag tag-blue">税收优惠</span>
+          <span class="tag tag-gray">增值税/企业所得税</span>
+        </div>
+        <div class="pc-summary">
+          对安置残疾人员占在职员工比例超过25%（且超过10人）的企业，经认定后可享受<strong>增值税即征即退</strong>和<strong>企业所得税优惠</strong>政策。
+        </div>
+      </div>
+      <div class="pc-detail" id="detail-4">
+        <div class="detail-row"><div class="detail-label">增值税</div><div class="detail-value">按每人每月退税额度：不超过该年度月最低工资标准的4倍，由税务机关即征即退</div></div>
+        <div class="detail-row"><div class="detail-label">所得税</div><div class="detail-value">企业安置残疾人员所支付的工资，可按实际支付工资的<strong>100%加计扣除</strong></div></div>
+        <div class="detail-row"><div class="detail-label">认定条件</div><div class="detail-value">① 残疾员工比例 ≥ 25%<br>② 残疾员工总人数 ≥ 10人<br>③ 向残疾人员工实际支付工资<br>④ 为员工缴纳社保</div></div>
+        <div class="detail-row"><div class="detail-label">认定机关</div><div class="detail-value">向主管税务机关提出资格认定申请，年度内持续有效</div></div>
+        <button class="apply-btn" onclick="alert('跳转至国家税务总局重庆市税务局官网')">查看完整政策文件 →</button>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-date">政策来源：国税总局 · 财税〔2016〕52号</div>
+        <div class="pc-toggle" onclick="toggleDetail('detail-4',this)">展开详情 ▼</div>
+      </div>
+    </div>
+
+    <!-- 政策5：培训补贴 -->
+    <div class="policy-card" data-cat="train">
+      <div class="pc-header">
+        <div class="pc-title-row">
+          <div class="pc-title">残疾人职业技能培训补贴</div>
+          <div class="pc-amount">最高3000元/人</div>
+        </div>
+        <div class="pc-tags">
+          <span class="tag tag-teal">培训补贴</span>
+          <span class="tag tag-gray">企业/员工均可申请</span>
+        </div>
+        <div class="pc-summary">
+          企业为录用的残疾人员工组织职业技能培训，可申请培训补贴，<strong>每人最高3000元</strong>，也可引导员工个人向残联申请培训券。
+        </div>
+      </div>
+      <div class="pc-detail" id="detail-5">
+        <div class="detail-row"><div class="detail-label">适用对象</div><div class="detail-value">企业内在职残疾员工，或拟招用的残疾人求职者</div></div>
+        <div class="detail-row"><div class="detail-label">补贴金额</div><div class="detail-value">按实际培训费用补贴，最高3000元/人次，同一人每年最多申请1次</div></div>
+        <div class="detail-row"><div class="detail-label">培训内容</div><div class="detail-value">国家职业技能目录内的技能培训，含线上/线下培训机构</div></div>
+        <div class="detail-row"><div class="detail-label">申请主体</div><div class="detail-value">企业或残疾人本人均可申请，向区县残联提交材料</div></div>
+        <button class="apply-btn" onclick="alert('跳转至重庆市残疾人培训补贴申请页面')">了解申请方式 →</button>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-date">政策来源：重庆市残联 / 人社局 · 2026年</div>
+        <div class="pc-toggle" onclick="toggleDetail('detail-5',this)">展开详情 ▼</div>
+      </div>
+    </div>
+
+    <!-- 政策6：无障碍改造补贴 -->
+    <div class="policy-card" data-cat="subsidy">
+      <div class="pc-header">
+        <div class="pc-title-row">
+          <div class="pc-title">工作场所无障碍改造补贴</div>
+          <div class="pc-amount">最高2万元/企业</div>
+        </div>
+        <div class="pc-tags">
+          <span class="tag tag-orange">设施补贴</span>
+          <span class="tag tag-gray">一次性补贴</span>
+        </div>
+        <div class="pc-summary">
+          企业为方便残疾员工在岗工作，对工作场所进行无障碍改造（如无障碍通道、卫生间、电梯改造），可申请<strong>一次性补贴最高2万元</strong>。
+        </div>
+      </div>
+      <div class="pc-detail" id="detail-6">
+        <div class="detail-row"><div class="detail-label">适用改造</div><div class="detail-value">无障碍通道、坡道、卫生间扶手、专用电梯按钮、盲道等设施</div></div>
+        <div class="detail-row"><div class="detail-label">申请条件</div><div class="detail-value">已录用持证残疾员工，改造完工经区县残联验收通过</div></div>
+        <div class="detail-row"><div class="detail-label">补贴上限</div><div class="detail-value">按实际改造费用的60%补贴，单次上限2万元</div></div>
+        <button class="apply-btn" onclick="alert('联系所在区县残联了解改造验收流程')">联系区县残联咨询 →</button>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-date">政策来源：重庆市残联 · 2026年</div>
+        <div class="pc-toggle" onclick="toggleDetail('detail-6',this)">展开详情 ▼</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:16px;font-size:12px;color:#94A3B8;">
+      如有申请疑问，可联系平台政策顾问或区县残联<br>
+      <span style="color:var(--primary);font-weight:600;cursor:pointer;" onclick="window.location.href='ai-chat.html'">也可咨询 AI 招聘助手 →</span>
+    </div>
+
+    <div class="gap-block"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">工作台</div></a>
+    <a href="jobs.html" class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">岗位</div></a>
+    <a href="resumes.html" class="nav-item"><div class="nav-icon">🔍</div><div class="nav-label">找人才</div></a>
+    <a href="profile.html" class="nav-item"><div class="nav-icon">🏢</div><div class="nav-label">企业中心</div></a>
+  </nav>
+
+  <script>
+    function filterCat(el, cat) {
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      document.querySelectorAll('.policy-card').forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'block' : 'none';
+      });
+    }
+
+    function toggleDetail(id, btn) {
+      const detail = document.getElementById(id);
+      const isOpen = detail.classList.contains('open');
+      detail.classList.toggle('open');
+      btn.textContent = isOpen ? '展开详情 ▼' : '收起详情 ▲';
+    }
+
+    function calcSubsidy() {
+      const count = parseInt(document.getElementById('calc-count').value) || 0;
+      const salary = parseInt(document.getElementById('calc-salary').value) || 0;
+      if (!count || !salary) { alert('请输入员工人数和月均工资'); return; }
+
+      const subsidy = count * 5000;
+      const social = Math.round(count * salary * 12 * 0.3 * 0.5);
+      const baojin = Math.round(count * salary * 12 * 0.016);
+      const total = subsidy + social + baojin;
+
+      document.getElementById('r-subsidy').textContent = subsidy.toLocaleString() + ' 元';
+      document.getElementById('r-social').textContent = social.toLocaleString() + ' 元';
+      document.getElementById('r-baojin').textContent = baojin.toLocaleString() + ' 元（减免）';
+      document.getElementById('r-total').textContent = total.toLocaleString() + ' 元';
+      document.getElementById('calc-result').classList.add('show');
+    }
+  </script>
+</body>
+</html>
