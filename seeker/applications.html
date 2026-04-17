@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>我的投递 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .apps-header {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff; border-bottom: 1px solid var(--border);
+    }
+    .apps-topbar {
+      display: flex; align-items: center;
+      padding: 0 16px; height: 52px; gap: 12px;
+    }
+    .apps-topbar a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .apps-topbar-title { flex: 1; font-size: 17px; font-weight: 700; color: var(--text); text-align: center; }
+
+    /* 状态 Tab */
+    .status-tabs {
+      display: flex;
+      padding: 0 16px;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .status-tabs::-webkit-scrollbar { display: none; }
+    .status-tab {
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 2.5px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .status-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* 统计横幅 */
+    .stats-banner {
+      margin: 10px 12px;
+      background: linear-gradient(135deg, #EFF6FF, #F5F3FF);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .stat-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      border-right: 1px solid #DBEAFE;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num { font-size: 22px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .stat-label { font-size: 11px; color: var(--text-muted); }
+
+    /* 投递卡片 */
+    .app-card {
+      margin: 0 12px 10px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .app-card-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .app-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    .app-job-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .app-status-badge {
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+      flex-shrink: 0; margin-left: 8px;
+    }
+    .status-pending { background: #FFF7ED; color: #EA580C; }
+    .status-viewed { background: var(--primary-light); color: var(--primary); }
+    .status-interview { background: var(--secondary-light); color: var(--secondary); }
+    .status-rejected { background: #F1F5F9; color: var(--text-muted); }
+    .app-company {
+      font-size: 13px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .app-card-footer {
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .app-time { font-size: 12px; color: #94A3B8; }
+    .app-salary { font-size: 14px; font-weight: 700; color: #EF4444; }
+    .app-actions { display: flex; gap: 8px; }
+    .app-btn {
+      padding: 5px 14px; border-radius: 6px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none;
+    }
+    .app-btn-outline {
+      background: #fff; color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .app-btn-primary { background: var(--primary); color: #fff; }
+    .app-btn-success { background: var(--secondary); color: #fff; }
+
+    /* 面试邀约特殊卡片 */
+    .interview-card {
+      margin: 0 12px 10px;
+      background: linear-gradient(135deg, #ECFDF5, #F0FDFA);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--secondary);
+      overflow: hidden;
+    }
+    .interview-banner {
+      background: var(--secondary);
+      padding: 8px 16px;
+      display: flex; align-items: center; gap: 6px;
+      color: #fff; font-size: 13px; font-weight: 600;
+    }
+    .interview-body { padding: 14px 16px; }
+    .interview-info {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: 12px;
+    }
+    .interview-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--text);
+    }
+    .interview-row-icon { font-size: 16px; width: 20px; text-align: center; }
+    .interview-actions { display: flex; gap: 8px; }
+    .btn-accept {
+      flex: 1; height: 40px;
+      background: var(--secondary);
+      border: none; border-radius: var(--radius-sm);
+      color: #fff; font-size: 14px; font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-decline {
+      flex: 1; height: 40px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted); font-size: 14px;
+      font-weight: 600; cursor: pointer;
+    }
+
+    .section-date {
+      padding: 12px 16px 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- 顶部 -->
+    <div class="apps-header">
+      <div class="apps-topbar">
+        <a href="home.html">←</a>
+        <div class="apps-topbar-title">我的投递</div>
+        <div style="width:20px"></div>
+      </div>
+      <div class="status-tabs">
+        <div class="status-tab active" onclick="switchTab(this)">全部(8)</div>
+        <div class="status-tab" onclick="switchTab(this)">待查看(3)</div>
+        <div class="status-tab" onclick="switchTab(this)">已查看(2)</div>
+        <div class="status-tab" onclick="switchTab(this)">面试邀约(2)</div>
+        <div class="status-tab" onclick="switchTab(this)">不合适(1)</div>
+      </div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats-banner">
+      <div class="stat-item">
+        <div class="stat-num">8</div>
+        <div class="stat-label">累计投递</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:#EA580C;">3</div>
+        <div class="stat-label">待查看</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:var(--secondary);">2</div>
+        <div class="stat-label">面试邀约</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:#94A3B8;">1</div>
+        <div class="stat-label">不合适</div>
+      </div>
+    </div>
+
+    <!-- 面试邀约（置顶） -->
+    <div class="section-date">📅 面试邀约</div>
+
+    <div class="interview-card">
+      <div class="interview-banner">
+        🎉 恭喜！您收到面试邀约
+      </div>
+      <div class="interview-body">
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px;">客服专员（居家办公）</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">重庆联通服务有限公司 <span class="tag tag-gold" style="font-size:11px;">✓ 认证</span></div>
+        <div class="interview-info">
+          <div class="interview-row">
+            <div class="interview-row-icon">📅</div>
+            <div>面试时间：2026年4月22日 14:00</div>
+          </div>
+          <div class="interview-row">
+            <div class="interview-row-icon">🎥</div>
+            <div>面试形式：在线视频面试</div>
+          </div>
+          <div class="interview-row">
+            <div class="interview-row-icon">💬</div>
+            <div>HR备注：请提前5分钟进入会议室</div>
+          </div>
+        </div>
+        <div class="interview-actions">
+          <button class="btn-accept" onclick="acceptInterview()">接受邀约</button>
+          <button class="btn-decline">改期/婉拒</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="interview-card">
+      <div class="interview-banner">
+        🎉 恭喜！您收到面试邀约
+      </div>
+      <div class="interview-body">
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px;">数据录入专员</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">重庆华远科技有限公司</div>
+        <div class="interview-info">
+          <div class="interview-row">
+            <div class="interview-row-icon">📅</div>
+            <div>面试时间：2026年4月24日 10:00</div>
+          </div>
+          <div class="interview-row">
+            <div class="interview-row-icon">🎥</div>
+            <div>面试形式：在线视频面试</div>
+          </div>
+        </div>
+        <div class="interview-actions">
+          <button class="btn-accept">接受邀约</button>
+          <button class="btn-decline">改期/婉拒</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 已查看 -->
+    <div class="section-date">👁️ 已查看</div>
+
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-card-top">
+          <div class="app-job-name">会计助理</div>
+          <div class="app-status-badge status-viewed">已查看</div>
+        </div>
+        <div class="app-company">
+          重庆恒信财务咨询有限公司
+          <span class="tag tag-gold" style="font-size:11px;">✓ 认证</span>
+        </div>
+      </div>
+      <div class="app-card-footer">
+        <div>
+          <div class="app-time">投递于 4月16日</div>
+          <div class="app-salary">4500-6000元</div>
+        </div>
+        <div class="app-actions">
+          <button class="app-btn app-btn-outline">查看岗位</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 待查看 -->
+    <div class="section-date">⏳ 待查看</div>
+
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-card-top">
+          <div class="app-job-name">在线客服（语音/文字）</div>
+          <div class="app-status-badge status-pending">待查看</div>
+        </div>
+        <div class="app-company">重庆天猫服务站</div>
+      </div>
+      <div class="app-card-footer">
+        <div>
+          <div class="app-time">投递于 4月15日</div>
+          <div class="app-salary">4500-6500元</div>
+        </div>
+        <div class="app-actions">
+          <button class="app-btn app-btn-outline">查看岗位</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-card-top">
+          <div class="app-job-name">电商运营助理</div>
+          <div class="app-status-badge status-pending">待查看</div>
+        </div>
+        <div class="app-company">重庆京东物流服务站</div>
+      </div>
+      <div class="app-card-footer">
+        <div>
+          <div class="app-time">投递于 4月14日</div>
+          <div class="app-salary">5000-8000元</div>
+        </div>
+        <div class="app-actions">
+          <button class="app-btn app-btn-outline">查看岗位</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-card-header">
+        <div class="app-card-top">
+          <div class="app-job-name">平面设计师（兼职）</div>
+          <div class="app-status-badge status-pending">待查看</div>
+        </div>
+        <div class="app-company">重庆远创广告有限公司</div>
+      </div>
+      <div class="app-card-footer">
+        <div>
+          <div class="app-time">投递于 4月13日</div>
+          <div class="app-salary">3000-5000元</div>
+        </div>
+        <div class="app-actions">
+          <button class="app-btn app-btn-outline">查看岗位</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 不合适 -->
+    <div class="section-date">😔 不合适</div>
+
+    <div class="app-card" style="opacity:0.7;">
+      <div class="app-card-header">
+        <div class="app-card-top">
+          <div class="app-job-name">软件测试工程师</div>
+          <div class="app-status-badge status-rejected">不合适</div>
+        </div>
+        <div class="app-company">重庆某科技有限公司</div>
+      </div>
+      <div class="app-card-footer">
+        <div>
+          <div class="app-time">投递于 4月10日</div>
+          <div class="app-salary">7000-12000元</div>
+        </div>
+        <div class="app-actions">
+          <button class="app-btn app-btn-outline">查看反馈</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:8px"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">首页</div>
+    </a>
+    <a href="jobs.html" class="nav-item">
+      <div class="nav-icon">💼</div>
+      <div class="nav-label">找工作</div>
+    </a>
+    <a href="messages.html" class="nav-item" style="position:relative;">
+      <div class="nav-icon">💬</div>
+      <div class="nav-label">消息</div>
+      <div class="badge" style="position:absolute;top:6px;right:22px;">3</div>
+    </a>
+    <a href="profile.html" class="nav-item active">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">我的</div>
+    </a>
+  </nav>
+
+  <script>
+    function switchTab(el) {
+      document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+    function acceptInterview() {
+      alert('已接受面试邀约！面试时间：2026年4月22日 14:00，视频面试链接已发送至您的消息中心。');
+    }
+  </script>
+</body>
+</html>

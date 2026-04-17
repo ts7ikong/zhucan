@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>我的简历 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 简历头部 */
+    .resume-header {
+      background: linear-gradient(135deg, #1D4ED8, #3B82F6);
+      padding: 20px 16px 28px;
+      position: relative;
+    }
+    .resume-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .rh-back { color: #fff; font-size: 20px; text-decoration: none; }
+    .rh-title { color: #fff; font-size: 17px; font-weight: 700; }
+    .rh-preview {
+      color: rgba(255,255,255,0.85);
+      font-size: 13px; cursor: pointer;
+      text-decoration: none;
+    }
+    .avatar-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .resume-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.5);
+      display: flex; align-items: center;
+      justify-content: center; font-size: 32px;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .resume-basic { flex: 1; color: #fff; }
+    .resume-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .resume-meta { font-size: 13px; opacity: 0.85; margin-bottom: 8px; }
+    .resume-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .rt { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 3px 10px; font-size: 12px; color: #fff; }
+
+    /* 完整度卡片 */
+    .complete-card {
+      margin: -12px 12px 0;
+      position: relative; z-index: 10;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 14px 16px;
+    }
+    .complete-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .complete-label { font-size: 14px; font-weight: 700; color: var(--text); }
+    .complete-pct { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .complete-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+    .complete-fill { height: 100%; background: linear-gradient(90deg, #2563EB, #3B82F6); border-radius: 4px; }
+    .complete-hint { font-size: 12px; color: var(--text-muted); }
+    .complete-hint em { color: var(--primary); font-style: normal; font-weight: 600; }
+
+    /* 简历板块 */
+    .section-card {
+      margin: 8px 12px 0;
+      background: #fff;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-icon {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .si-blue { background: var(--primary-light); }
+    .si-green { background: var(--secondary-light); }
+    .si-purple { background: #F5F3FF; }
+    .si-orange { background: #FFF7ED; }
+    .si-teal { background: #F0FDFA; }
+    .si-yellow { background: #FEFCE8; }
+    .si-gray { background: #F1F5F9; }
+    .section-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .section-required {
+      font-size: 11px; color: var(--error);
+      background: #FEF2F2; padding: 2px 7px;
+      border-radius: 10px; font-weight: 600;
+    }
+    .section-add {
+      color: var(--primary); font-size: 13px;
+      font-weight: 600; cursor: pointer;
+    }
+    .section-edit {
+      color: var(--text-muted); font-size: 13px; cursor: pointer;
+    }
+    .section-body { padding: 12px 16px; }
+
+    /* 内容条目 */
+    .entry {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .entry-top {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; margin-bottom: 4px;
+    }
+    .entry-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .entry-time { font-size: 12px; color: var(--text-muted); }
+    .entry-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+    .entry-desc { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+    /* 空白状态 */
+    .empty-block {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .empty-block-left {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .empty-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .empty-block-text { font-size: 14px; color: #94A3B8; }
+    .empty-block-arrow { color: #CBD5E1; font-size: 16px; }
+
+    /* 技能标签 */
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-tag {
+      padding: 4px 12px;
+      background: var(--primary-light);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* 意向信息 */
+    .intent-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .intent-item { }
+    .intent-label { font-size: 11px; color: #94A3B8; margin-bottom: 3px; }
+    .intent-value { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    /* 可见性切换 */
+    .visibility-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: #fff;
+      margin: 8px 12px 0;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .vis-left { display: flex; align-items: center; gap: 10px; }
+    .vis-icon { font-size: 20px; }
+    .vis-text { }
+    .vis-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .vis-desc { font-size: 12px; color: var(--text-muted); }
+    /* 切换开关 */
+    .toggle-switch {
+      width: 46px; height: 26px;
+      background: var(--secondary);
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 23px;
+      width: 20px; height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.off { background: var(--border); }
+    .toggle-switch.off::after { left: 3px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- 简历头部 -->
+    <div class="resume-header">
+      <div class="resume-header-top">
+        <a href="home.html" class="rh-back" aria-label="返回首页">←</a>
+        <div class="rh-title">我的简历</div>
+        <a href="#" class="rh-preview">预览</a>
+      </div>
+      <div class="avatar-row">
+        <div class="resume-avatar" aria-label="点击更换头像">😊</div>
+        <div class="resume-basic">
+          <div class="resume-name">王小明</div>
+          <div class="resume-meta">男 · 28岁 · 重庆市渝中区</div>
+          <div class="resume-tags">
+            <span class="rt">🔰 已实名认证</span>
+            <span class="rt">♿ 肢体障碍</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 完整度 -->
+    <div class="complete-card">
+      <div class="complete-top">
+        <div class="complete-label">简历完整度</div>
+        <div class="complete-pct">55%</div>
+      </div>
+      <div class="complete-bar">
+        <div class="complete-fill" style="width:55%"></div>
+      </div>
+      <div class="complete-hint">
+        建议完善：<em>工作经历、技能标签</em>，完整度越高通过率越高
+      </div>
+    </div>
+
+    <!-- 简历可见性 -->
+    <div class="visibility-row">
+      <div class="vis-left">
+        <div class="vis-icon">👁️</div>
+        <div class="vis-text">
+          <div class="vis-title">简历公开</div>
+          <div class="vis-desc">企业可搜索到您的简历</div>
+        </div>
+      </div>
+      <div class="toggle-switch" id="vis-toggle" onclick="toggleVisibility()" aria-label="切换简历可见性"></div>
+    </div>
+
+    <!-- 求职意向 -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon si-blue">🎯</div>
+          <div class="section-name">求职意向</div>
+          <span class="section-required">必填</span>
+        </div>
+        <span class="section-edit" onclick="editSection('intent')">编辑</span>
+      </div>
+      <div class="section-body">
+        <div class="intent-grid">
+          <div class="intent-item">
+            <div class="intent-label">期望岗位</div>
+            <div class="intent-value">客服专员、数据录入</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">期望薪资</div>
+            <div class="intent-value">4000-7000元/月</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">工作形式</div>
+            <div class="intent-value">全职 · 居家办公</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">期望地点</div>
+            <div class="intent-value">重庆渝中区、江北区</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">到岗时间</div>
+            <div class="intent-value">随时到岗</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">期望行业</div>
+            <div class="intent-value">互联网、服务业</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 基本信息 -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon si-green">👤</div>
+          <div class="section-name">基本信息</div>
+        </div>
+        <span class="section-edit">编辑</span>
+      </div>
+      <div class="section-body">
+        <div class="intent-grid">
+          <div class="intent-item">
+            <div class="intent-label">联系手机</div>
+            <div class="intent-value">138****8888</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">邮箱</div>
+            <div class="intent-value">wang***@qq.com</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">所在城市</div>
+            <div class="intent-value">重庆市渝中区</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">性别</div>
+            <div class="intent-value">男</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 残疾信息 -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon si-orange">♿</div>
+          <div class="section-name">残疾信息</div>
+        </div>
+        <span class="section-edit">编辑</span>
+      </div>
+      <div class="section-body">
+        <div class="intent-grid">
+          <div class="intent-item">
+            <div class="intent-label">残疾类型</div>
+            <div class="intent-value">肢体障碍</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">残疾等级</div>
+            <div class="intent-value">三级</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">残疾证号</div>
+            <div class="intent-value">50***2024001</div>
+          </div>
+          <div class="intent-item">
+            <div class="intent-label">证件照片</div>
+            <div class="intent-value" style="color:var(--secondary);">✓ 已上传</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 教育经历 -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon si-purple">🎓</div>
+          <div class="section-name">教育经历</div>
+          <span class="section-required">必填</span>
+        </div>
+        <span class="section-add">+ 添加</span>
+      </div>
+      <div class="section-body">
+        <div class="entry">
+          <div class="entry-top">
+            <div class="entry-title">重庆电子工程职业学院</div>
+            <div class="entry-time">2015.09 - 2018.06</div>
+          </div>
+          <div class="entry-sub">计算机应用技术 · 大专</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 工作经历（未填） -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon si-teal">💼</div>
+          <div class="section-name">工作经历</div>
+        </div>
+        <span class="section-add">+ 添加</span>
+      </div>
+      <div class="empty-block" onclick="editSection('work')">
+        <div class="empty-block-left">
+          <div class="empty-dot"></div>
+          <div class="empty-block-text">添加工作/实习经历（推荐填写）</div>
+        </div>
+        <div class="empty-block-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- 技能证书 -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon si-yellow">⭐</div>
+          <div class="section-name">技能与证书</div>
+        </div>
+        <span class="section-edit">编辑</span>
+      </div>
+      <div class="section-body">
+        <div class="skill-tags">
+          <span class="skill-tag">Office办公</span>
+          <span class="skill-tag">客户服务</span>
+          <span class="skill-tag">数据录入</span>
+          <span class="skill-tag">普通话</span>
+        </div>
+        <div style="height:8px"></div>
+        <div class="empty-block" style="padding:8px 0;" onclick="editSection('cert')">
+          <div class="empty-block-left">
+            <div class="empty-dot"></div>
+            <div class="empty-block-text">添加证书（如计算机等级证书等）</div>
+          </div>
+          <div class="empty-block-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自我评价 -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-header-left">
+          <div class="section-icon si-gray">✍️</div>
+          <div class="section-name">自我评价</div>
+        </div>
+        <span class="section-edit">编辑</span>
+      </div>
+      <div class="section-body">
+        <div style="font-size:14px;color:var(--text);line-height:1.7;">
+          本人性格开朗，工作认真负责，具备良好的沟通能力和服务意识。
+          熟悉Office办公软件，有一定的客户服务经验。虽然肢体上有残疾，
+          但思维灵活，学习能力强，能胜任居家办公或无障碍环境下的各类工作。
+          期待找到一份能发挥自身价值的岗位。
+        </div>
+      </div>
+    </div>
+
+    <div style="height:8px;background:var(--bg);margin:8px 0;"></div>
+  </div>
+
+  <!-- 底部导航 -->
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">首页</div>
+    </a>
+    <a href="jobs.html" class="nav-item">
+      <div class="nav-icon">💼</div>
+      <div class="nav-label">找工作</div>
+    </a>
+    <a href="messages.html" class="nav-item" style="position:relative;">
+      <div class="nav-icon">💬</div>
+      <div class="nav-label">消息</div>
+      <div class="badge" style="position:absolute;top:6px;right:22px;">3</div>
+    </a>
+    <a href="profile.html" class="nav-item active">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">我的</div>
+    </a>
+  </nav>
+
+  <script>
+    function toggleVisibility() {
+      const el = document.getElementById('vis-toggle');
+      el.classList.toggle('off');
+    }
+    function editSection(sec) {
+      alert('编辑' + sec + '（原型演示，跳转至编辑页）');
+    }
+  </script>
+</body>
+</html>

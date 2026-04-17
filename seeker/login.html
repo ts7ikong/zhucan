@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>登录 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .login-header {
+      padding: 60px 24px 32px;
+      background: linear-gradient(180deg, #EFF6FF 0%, #F8FAFC 100%);
+    }
+    .login-logo {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+    .login-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .login-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .login-form {
+      padding: 28px 24px;
+    }
+    .tab-switch {
+      display: flex;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      flex: 1;
+      height: 36px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: var(--primary);
+      font-weight: 700;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .sms-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .sms-input { flex: 1; }
+    .sms-btn {
+      height: 48px;
+      padding: 0 16px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .forgot-pwd {
+      text-align: right;
+      font-size: 13px;
+      color: var(--primary);
+      margin-top: -8px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .login-extra {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .login-extra a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .divider-text {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .divider-text::before, .divider-text::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .third-party {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+    .third-btn {
+      width: 52px;
+      height: 52px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      background: #fff;
+    }
+    .a11y-notice {
+      margin: 0 24px 16px;
+      padding: 10px 14px;
+      background: #EFF6FF;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--primary);
+      font-size: 12px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .password-wrap {
+      position: relative;
+    }
+    .eye-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-no-nav">
+    <!-- 无障碍控制 -->
+    <div class="a11y-bar">
+      <button class="a11y-btn" onclick="toggleContrast()">🔆 对比度</button>
+      <button class="a11y-btn" onclick="speakPage()">🔊 朗读</button>
+    </div>
+
+    <!-- 头部 -->
+    <div class="login-header">
+      <div class="login-logo">♿</div>
+      <div class="login-title">欢迎回来</div>
+      <div class="login-sub">重庆市残疾人就业数字化服务平台</div>
+    </div>
+
+    <!-- 无障碍提示 -->
+    <div class="a11y-notice">
+      <span>ℹ️</span>
+      <span>本页面支持屏幕朗读，按右上角「朗读」键可听取页面内容</span>
+    </div>
+
+    <!-- 登录表单 -->
+    <div class="login-form">
+      <!-- Tab 切换 -->
+      <div class="tab-switch">
+        <button class="tab-btn active" id="tab-pwd" onclick="switchTab('pwd')">密码登录</button>
+        <button class="tab-btn" id="tab-sms" onclick="switchTab('sms')">短信登录</button>
+      </div>
+
+      <!-- 密码登录 -->
+      <div id="form-pwd">
+        <div class="input-group">
+          <label class="input-label" aria-label="手机号">手机号<span class="required">*</span></label>
+          <input class="input-field" type="tel" placeholder="请输入手机号" aria-required="true" maxlength="11">
+        </div>
+        <div class="input-group">
+          <label class="input-label" aria-label="密码">密码<span class="required">*</span></label>
+          <div class="password-wrap">
+            <input class="input-field" type="password" placeholder="请输入密码（6-20位）" aria-required="true" id="pwd-input">
+            <button class="eye-btn" onclick="togglePwd()" aria-label="显示或隐藏密码">👁️</button>
+          </div>
+        </div>
+        <a class="forgot-pwd" href="#" aria-label="忘记密码">忘记密码？</a>
+        <a href="home.html" class="btn btn-primary" aria-label="登录" role="button">登 录</a>
+      </div>
+
+      <!-- 短信登录 -->
+      <div id="form-sms" style="display:none">
+        <div class="input-group">
+          <label class="input-label">手机号<span class="required">*</span></label>
+          <input class="input-field" type="tel" placeholder="请输入手机号" maxlength="11">
+        </div>
+        <div class="input-group">
+          <label class="input-label">验证码<span class="required">*</span></label>
+          <div class="sms-row">
+            <input class="input-field sms-input" type="number" placeholder="6位验证码" maxlength="6">
+            <button class="sms-btn" onclick="sendSms(this)">发送验证码</button>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+        <a href="home.html" class="btn btn-primary" role="button">登 录</a>
+      </div>
+
+      <div class="divider-text">其他登录方式</div>
+
+      <div class="third-party">
+        <div class="third-btn" title="微信登录" aria-label="微信登录">
+          <img src="https://img.icons8.com/color/48/wechat--v1.png" width="28" alt="微信登录" onerror="this.parentNode.innerHTML='💬'">
+        </div>
+      </div>
+
+      <div class="login-extra">
+        还没有账号？<a href="register.html">立即注册</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(type) {
+      document.getElementById('tab-pwd').classList.toggle('active', type === 'pwd');
+      document.getElementById('tab-sms').classList.toggle('active', type === 'sms');
+      document.getElementById('form-pwd').style.display = type === 'pwd' ? 'block' : 'none';
+      document.getElementById('form-sms').style.display = type === 'sms' ? 'block' : 'none';
+    }
+    function togglePwd() {
+      const input = document.getElementById('pwd-input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+    let countdown = 0;
+    function sendSms(btn) {
+      if (countdown > 0) return;
+      countdown = 60;
+      btn.disabled = true;
+      const timer = setInterval(() => {
+        countdown--;
+        btn.textContent = countdown + 's后重发';
+        if (countdown <= 0) {
+          clearInterval(timer);
+          btn.textContent = '发送验证码';
+          btn.disabled = false;
+        }
+      }, 1000);
+    }
+    function toggleContrast() {
+      document.body.classList.toggle('high-contrast');
+    }
+    function speakPage() {
+      if ('speechSynthesis' in window) {
+        const text = '登录页面。请输入手机号和密码进行登录。';
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN';
+        speechSynthesis.speak(u);
+      }
+    }
+  </script>
+</body>
+</html>

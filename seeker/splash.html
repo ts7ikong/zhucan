@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>启动页 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body { background: linear-gradient(160deg, #1D4ED8 0%, #2563EB 60%, #3B82F6 100%); max-width: 390px; }
+    .splash-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .splash-bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .circle-1 { width: 300px; height: 300px; top: -80px; right: -80px; }
+    .circle-2 { width: 200px; height: 200px; bottom: 60px; left: -60px; }
+    .circle-3 { width: 120px; height: 120px; top: 200px; left: -20px; }
+    .logo-wrap {
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .app-name {
+      color: #fff;
+      font-size: 28px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .app-slogan {
+      color: rgba(255,255,255,0.8);
+      font-size: 15px;
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .splash-feature {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      margin-bottom: 56px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: rgba(255,255,255,0.9);
+    }
+    .feature-dot {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .feature-text { font-size: 14px; line-height: 1.4; }
+    .feature-label { font-weight: 600; font-size: 15px; color: #fff; }
+    .splash-actions {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: absolute;
+      bottom: 48px;
+      left: 0;
+      padding: 0 32px;
+    }
+    .btn-white {
+      background: #fff;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .btn-white-outline {
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.7);
+      font-weight: 600;
+    }
+    .splash-version {
+      position: absolute;
+      bottom: 16px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      width: 100%;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-page">
+    <div class="splash-bg-circle circle-1"></div>
+    <div class="splash-bg-circle circle-2"></div>
+    <div class="splash-bg-circle circle-3"></div>
+
+    <div class="logo-wrap">♿</div>
+    <div class="app-name">残启·就业平台</div>
+    <div class="app-slogan">AI + 大数据 · 助残疾人就业腾飞</div>
+
+    <div class="splash-feature">
+      <div class="feature-item">
+        <div class="feature-dot">🤖</div>
+        <div class="feature-text">
+          <div class="feature-label">AI 智能匹配</div>
+          <div>多维度精准推荐，找到最适合你的岗位</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot">🔊</div>
+        <div class="feature-text">
+          <div class="feature-label">全程语音播报</div>
+          <div>无障碍设计，视觉障碍用户友好</div>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot">📋</div>
+        <div class="feature-text">
+          <div class="feature-label">政策精准推送</div>
+          <div>补贴、减税政策一键查询</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="splash-actions">
+      <a href="register.html" class="btn btn-white">立即注册</a>
+      <a href="login.html" class="btn btn-white-outline">已有账号，去登录</a>
+    </div>
+
+    <div class="splash-version">v1.0 · 重庆市残疾人就业数字化服务平台</div>
+  </div>
+</body>
+</html>

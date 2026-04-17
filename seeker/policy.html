@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>政策中心 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .policy-header {
+      background: linear-gradient(135deg, #0F766E, #0D9488);
+      padding: 20px 16px 32px;
+      position: relative; overflow: hidden;
+    }
+    .policy-header::after {
+      content: ''; position: absolute; bottom: -24px;
+      left: 0; right: 0; height: 48px;
+      background: var(--bg); border-radius: 24px 24px 0 0;
+    }
+    .ph-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .ph-top a { color: rgba(255,255,255,0.9); font-size: 20px; text-decoration: none; }
+    .ph-title { color: #fff; font-size: 17px; font-weight: 700; }
+    .search-wrap {
+      background: rgba(255,255,255,0.15);
+      border-radius: 22px; height: 40px;
+      display: flex; align-items: center; padding: 0 14px; gap: 8px;
+    }
+    .search-wrap input {
+      flex: 1; border: none; background: transparent;
+      font-size: 14px; color: #fff; outline: none;
+    }
+    .search-wrap input::placeholder { color: rgba(255,255,255,0.6); }
+    .search-wrap-icon { color: rgba(255,255,255,0.7); }
+
+    /* 分类标签 */
+    .cat-scroll {
+      padding: 16px 12px 8px;
+      display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+    }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-chip {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; flex-shrink: 0; cursor: pointer;
+    }
+    .cat-icon-wrap {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; transition: all 0.2s;
+    }
+    .cat-chip.active .cat-icon-wrap {
+      box-shadow: 0 4px 12px rgba(13,148,136,0.4);
+    }
+    .cat-name { font-size: 11px; color: var(--text); font-weight: 500; text-align: center; }
+    .cat-chip.active .cat-name { color: #0D9488; font-weight: 700; }
+
+    /* 热点政策横幅 */
+    .hot-banner {
+      margin: 0 12px 8px;
+      background: linear-gradient(135deg, #0F766E, #0D9488);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+    .hot-top {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 8px;
+    }
+    .hot-badge {
+      background: #FDE047; color: #854D0E;
+      font-size: 11px; font-weight: 700;
+      padding: 2px 7px; border-radius: 10px;
+    }
+    .hot-title { color: #fff; font-size: 15px; font-weight: 700; }
+    .hot-desc { color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.5; }
+    .hot-meta {
+      display: flex; justify-content: space-between;
+      margin-top: 10px; font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* 政策卡片 */
+    .policy-card {
+      margin: 0 12px 8px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    .policy-card:active { opacity: 0.9; }
+    .pc-header {
+      padding: 12px 14px 10px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+    }
+    .pc-left { flex: 1; }
+    .pc-type-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 10px;
+      font-size: 11px; font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .pc-type-enterprise { background: #EFF6FF; color: #2563EB; }
+    .pc-type-personal { background: var(--secondary-light); color: var(--secondary); }
+    .pc-type-both { background: #F5F3FF; color: #7C3AED; }
+    .pc-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 4px; }
+    .pc-abstract { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .pc-icon { font-size: 28px; flex-shrink: 0; }
+    .pc-footer {
+      padding: 8px 14px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .pc-issuer { font-size: 11px; color: #94A3B8; }
+    .pc-date { font-size: 11px; color: #94A3B8; }
+    .pc-read { font-size: 12px; color: var(--primary); font-weight: 600; }
+
+    .section-title { padding: 10px 16px 4px; font-size: 14px; font-weight: 700; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- 头部 -->
+    <div class="policy-header">
+      <div class="ph-top">
+        <a href="home.html">←</a>
+        <div class="ph-title">涉残政策中心</div>
+        <div style="width:20px"></div>
+      </div>
+      <div class="search-wrap">
+        <span class="search-wrap-icon">🔍</span>
+        <input type="text" placeholder="搜索政策关键词，如：岗位补贴">
+      </div>
+    </div>
+
+    <!-- 分类快捷 -->
+    <div class="cat-scroll">
+      <div class="cat-chip active" onclick="selectCat(this)">
+        <div class="cat-icon-wrap" style="background:#F0FDFA;">📋</div>
+        <div class="cat-name">全部</div>
+      </div>
+      <div class="cat-chip" onclick="selectCat(this)">
+        <div class="cat-icon-wrap" style="background:#EFF6FF;">🏢</div>
+        <div class="cat-name">企业补贴</div>
+      </div>
+      <div class="cat-chip" onclick="selectCat(this)">
+        <div class="cat-icon-wrap" style="background:#ECFDF5;">👤</div>
+        <div class="cat-name">个人补贴</div>
+      </div>
+      <div class="cat-chip" onclick="selectCat(this)">
+        <div class="cat-icon-wrap" style="background:#FFFBEB;">💰</div>
+        <div class="cat-name">税收优惠</div>
+      </div>
+      <div class="cat-chip" onclick="selectCat(this)">
+        <div class="cat-icon-wrap" style="background:#FEF3C7;">🎓</div>
+        <div class="cat-name">培训补贴</div>
+      </div>
+      <div class="cat-chip" onclick="selectCat(this)">
+        <div class="cat-icon-wrap" style="background:#F5F3FF;">🚀</div>
+        <div class="cat-name">创业补贴</div>
+      </div>
+      <div class="cat-chip" onclick="selectCat(this)">
+        <div class="cat-icon-wrap" style="background:#FFF1F2;">❤️‍🩹</div>
+        <div class="cat-name">康复补贴</div>
+      </div>
+    </div>
+
+    <!-- 最新热点 -->
+    <div class="hot-banner">
+      <div class="hot-top">
+        <span class="hot-badge">NEW</span>
+        <span style="color:#FDE047;font-size:12px;font-weight:600;">最新政策</span>
+      </div>
+      <div class="hot-title">2026年重庆市残疾人就业补贴标准更新</div>
+      <div class="hot-desc">
+        个人就业生活补贴最高提至1500元/月，企业岗位补贴标准同步上调，
+        新增"以工代训"专项培训补贴项目。
+      </div>
+      <div class="hot-meta">
+        <span>重庆市残疾人联合会</span>
+        <span>2026-04-10 › 查看详情</span>
+      </div>
+    </div>
+
+    <!-- 政策列表 -->
+    <div class="section-title">企业用工补贴政策</div>
+
+    <a href="policy-detail.html" class="policy-card">
+      <div class="pc-header">
+        <div class="pc-left">
+          <div class="pc-type-tag pc-type-enterprise">🏢 企业适用</div>
+          <div class="pc-title">残保金减免及超比例安置奖励政策（2026年版）</div>
+          <div class="pc-abstract">超比例安置残疾人就业的企业可获得岗位补贴及残保金减免，最高减免50%...</div>
+        </div>
+        <div class="pc-icon">💼</div>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-issuer">重庆市残联</div>
+        <div class="pc-date">2026-03-01</div>
+        <div class="pc-read">查看全文 ›</div>
+      </div>
+    </a>
+
+    <a href="policy-detail.html" class="policy-card">
+      <div class="pc-header">
+        <div class="pc-left">
+          <div class="pc-type-tag pc-type-enterprise">🏢 企业适用</div>
+          <div class="pc-title">岗位补贴与社保补贴申请指南</div>
+          <div class="pc-abstract">企业每录用一名残疾人，可申请每月500-1000元的岗位补贴，及社保费用补贴...</div>
+        </div>
+        <div class="pc-icon">💰</div>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-issuer">重庆市人力社保局</div>
+        <div class="pc-date">2026-01-15</div>
+        <div class="pc-read">查看全文 ›</div>
+      </div>
+    </a>
+
+    <a href="policy-detail.html" class="policy-card">
+      <div class="pc-header">
+        <div class="pc-left">
+          <div class="pc-type-tag pc-type-enterprise">🏢 企业适用</div>
+          <div class="pc-title">残疾人就业企业税收优惠政策（增值税/所得税）</div>
+          <div class="pc-abstract">符合条件的企业可享受增值税即征即退、企业所得税加计扣除等优惠政策...</div>
+        </div>
+        <div class="pc-icon">📊</div>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-issuer">国家税务总局重庆市局</div>
+        <div class="pc-date">2025-12-20</div>
+        <div class="pc-read">查看全文 ›</div>
+      </div>
+    </a>
+
+    <div class="section-title">个人补贴政策</div>
+
+    <a href="policy-detail.html" class="policy-card">
+      <div class="pc-header">
+        <div class="pc-left">
+          <div class="pc-type-tag pc-type-personal">👤 个人适用</div>
+          <div class="pc-title">残疾人就业生活补贴（2026年更新）</div>
+          <div class="pc-abstract">在职残疾人可申请就业生活补贴，标准为每月800-1500元，按残疾等级区分...</div>
+        </div>
+        <div class="pc-icon">🙋</div>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-issuer">重庆市残联 · 渝残联〔2026〕8号</div>
+        <div class="pc-date">2026-04-10</div>
+        <div class="pc-read">查看全文 ›</div>
+      </div>
+    </a>
+
+    <a href="policy-detail.html" class="policy-card">
+      <div class="pc-header">
+        <div class="pc-left">
+          <div class="pc-type-tag pc-type-personal">👤 个人适用</div>
+          <div class="pc-title">残疾人创业补贴及小额担保贷款</div>
+          <div class="pc-abstract">自主创业的残疾人可申请一次性创业补贴5000元，并享受最高20万元小额贷款免息...</div>
+        </div>
+        <div class="pc-icon">🚀</div>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-issuer">重庆市人力社保局</div>
+        <div class="pc-date">2025-11-08</div>
+        <div class="pc-read">查看全文 ›</div>
+      </div>
+    </a>
+
+    <a href="policy-detail.html" class="policy-card">
+      <div class="pc-header">
+        <div class="pc-left">
+          <div class="pc-type-tag pc-type-both">🌐 企业/个人</div>
+          <div class="pc-title">残疾人职业技能培训补贴申请办法</div>
+          <div class="pc-abstract">参加政府认定培训项目的残疾人及其所在企业，均可享受培训费用全额补贴...</div>
+        </div>
+        <div class="pc-icon">🎓</div>
+      </div>
+      <div class="pc-footer">
+        <div class="pc-issuer">重庆市残联 + 人力社保局联合发布</div>
+        <div class="pc-date">2025-09-01</div>
+        <div class="pc-read">查看全文 ›</div>
+      </div>
+    </a>
+
+    <div style="height:8px;background:var(--bg);margin:8px 0;"></div>
+  </div>
+
+  <a href="ai-chat.html" style="position:fixed;bottom:calc(var(--nav-h)+16px);right:14px;width:52px;height:52px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 14px rgba(79,70,229,.4);z-index:99;text-decoration:none;">🤖</a>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item">
+      <div class="nav-icon">🏠</div><div class="nav-label">首页</div>
+    </a>
+    <a href="jobs.html" class="nav-item">
+      <div class="nav-icon">💼</div><div class="nav-label">找工作</div>
+    </a>
+    <a href="messages.html" class="nav-item" style="position:relative;">
+      <div class="nav-icon">💬</div><div class="nav-label">消息</div>
+      <div class="badge" style="position:absolute;top:6px;right:22px;">3</div>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <div class="nav-icon">👤</div><div class="nav-label">我的</div>
+    </a>
+  </nav>
+
+  <script>
+    function selectCat(el) {
+      document.querySelectorAll('.cat-chip').forEach(c => {
+        c.classList.remove('active');
+        c.querySelector('.cat-icon-wrap').style.boxShadow = '';
+      });
+      el.classList.add('active');
+    }
+  </script>
+</body>
+</html>

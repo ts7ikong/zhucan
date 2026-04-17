@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>残疾人就业平台 - 原型导航</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+      background: #F1F5F9; color: #1E293B; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 16px 48px;
+    }
+    .hero { text-align: center; margin-bottom: 36px; }
+    .hero-icon { font-size: 56px; margin-bottom: 12px; }
+    .hero-title { font-size: 26px; font-weight: 900; color: #1E293B; margin-bottom: 6px; }
+    .hero-sub { font-size: 14px; color: #64748B; }
+    .hero-badge {
+      display: inline-block; margin-top: 10px;
+      background: #EFF6FF; color: #2563EB;
+      border: 1px solid #BFDBFE;
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 12px; font-weight: 600;
+    }
+
+    /* 移动端预览容器 */
+    .mobile-section {
+      width: 100%; max-width: 480px; margin-bottom: 40px;
+    }
+    .section-label {
+      font-size: 13px; font-weight: 700; color: #64748B;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 14px; padding-left: 4px;
+    }
+
+    .phone-frame {
+      width: 100%; max-width: 390px; margin: 0 auto;
+      border: 8px solid #1E293B; border-radius: 44px;
+      overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      position: relative; background: #fff;
+    }
+    .phone-notch {
+      height: 28px; background: #1E293B;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 0 0 16px 16px; margin: -1px auto 0;
+      width: 120px; position: relative; z-index: 1;
+    }
+    .phone-notch::before { content: ''; width: 60px; height: 6px;
+      background: #374151; border-radius: 3px; }
+    .phone-iframe {
+      width: 100%; height: 700px; border: none; display: block;
+    }
+
+    /* 页面目录卡片 */
+    .pages-grid {
+      width: 100%; max-width: 800px;
+    }
+    .pages-title {
+      font-size: 18px; font-weight: 800; color: #1E293B;
+      margin-bottom: 16px; text-align: center;
+    }
+    .cat-group { margin-bottom: 24px; }
+    .cat-title {
+      font-size: 13px; font-weight: 700; color: #64748B;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 10px; padding-left: 4px;
+    }
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    .page-card {
+      background: #fff; border-radius: 14px;
+      padding: 14px 14px 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      cursor: pointer; text-decoration: none;
+      border: 1.5px solid transparent;
+      transition: all 0.2s; display: block;
+    }
+    .page-card:hover { border-color: #2563EB; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.15); }
+    .page-card-icon { font-size: 28px; margin-bottom: 8px; }
+    .page-card-name { font-size: 14px; font-weight: 700; color: #1E293B; margin-bottom: 3px; }
+    .page-card-desc { font-size: 12px; color: #64748B; line-height: 1.4; }
+    .page-card-file { font-size: 11px; color: #94A3B8; margin-top: 6px; font-family: monospace; }
+
+    /* 技术栈 */
+    .tech-bar {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-top: 32px;
+    }
+    .tech-chip {
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+      background: #fff; border: 1px solid #E2E8F0;
+      color: #64748B;
+    }
+
+    @media (max-width: 600px) {
+      .cards-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-icon">♿</div>
+    <div class="hero-title">残疾人就业平台</div>
+    <div class="hero-sub">重庆市残疾人就业数字化服务平台 · 前端原型 v1.0</div>
+    <div class="hero-badge">残疾人求职端 · 手机端原型</div>
+  </div>
+
+  <!-- 手机预览 -->
+  <div class="mobile-section">
+    <div class="section-label">📱 实时预览（首页）</div>
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <iframe class="phone-iframe" src="seeker/home.html" id="preview-frame" title="页面预览"></iframe>
+    </div>
+  </div>
+
+  <!-- 页面目录 -->
+  <div class="pages-grid">
+    <div class="pages-title">📋 原型页面目录</div>
+
+    <div class="cat-group">
+      <div class="cat-title">🔐 注册 & 认证流程</div>
+      <div class="cards-row">
+        <a href="seeker/splash.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/splash.html')">
+          <div class="page-card-icon">✨</div>
+          <div class="page-card-name">启动页</div>
+          <div class="page-card-desc">品牌介绍，引导注册/登录</div>
+          <div class="page-card-file">splash.html</div>
+        </a>
+        <a href="seeker/login.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/login.html')">
+          <div class="page-card-icon">🔑</div>
+          <div class="page-card-name">登录页</div>
+          <div class="page-card-desc">密码登录 / 短信登录</div>
+          <div class="page-card-file">login.html</div>
+        </a>
+        <a href="seeker/register.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/register.html')">
+          <div class="page-card-icon">📝</div>
+          <div class="page-card-name">注册页</div>
+          <div class="page-card-desc">手机号+密码+验证码</div>
+          <div class="page-card-file">register.html</div>
+        </a>
+        <a href="seeker/verify.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/verify.html')">
+          <div class="page-card-icon">🪪</div>
+          <div class="page-card-name">实名认证</div>
+          <div class="page-card-desc">证件上传+人脸活体检测</div>
+          <div class="page-card-file">verify.html</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="cat-group">
+      <div class="cat-title">🏠 主要功能页</div>
+      <div class="cards-row">
+        <a href="seeker/home.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/home.html')">
+          <div class="page-card-icon">🏠</div>
+          <div class="page-card-name">首页</div>
+          <div class="page-card-desc">AI推荐岗位、快捷入口、政策通知</div>
+          <div class="page-card-file">home.html</div>
+        </a>
+        <a href="seeker/jobs.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/jobs.html')">
+          <div class="page-card-icon">🔍</div>
+          <div class="page-card-name">找工作</div>
+          <div class="page-card-desc">搜索+多维筛选+排序</div>
+          <div class="page-card-file">jobs.html</div>
+        </a>
+        <a href="seeker/job-detail.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/job-detail.html')">
+          <div class="page-card-icon">💼</div>
+          <div class="page-card-name">岗位详情</div>
+          <div class="page-card-desc">AI匹配分析+无障碍环境+投递</div>
+          <div class="page-card-file">job-detail.html</div>
+        </a>
+        <a href="seeker/resume.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/resume.html')">
+          <div class="page-card-icon">📄</div>
+          <div class="page-card-name">我的简历</div>
+          <div class="page-card-desc">7个模块+完整度+可见性</div>
+          <div class="page-card-file">resume.html</div>
+        </a>
+        <a href="seeker/applications.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/applications.html')">
+          <div class="page-card-icon">📮</div>
+          <div class="page-card-name">我的投递</div>
+          <div class="page-card-desc">投递状态追踪+面试邀约</div>
+          <div class="page-card-file">applications.html</div>
+        </a>
+        <a href="seeker/messages.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/messages.html')">
+          <div class="page-card-icon">💬</div>
+          <div class="page-card-name">消息中心</div>
+          <div class="page-card-desc">招聘消息+系统通知+公告</div>
+          <div class="page-card-file">messages.html</div>
+        </a>
+        <a href="seeker/policy.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/policy.html')">
+          <div class="page-card-icon">📋</div>
+          <div class="page-card-name">政策中心</div>
+          <div class="page-card-desc">企业补贴+个人补贴+税收</div>
+          <div class="page-card-file">policy.html</div>
+        </a>
+        <a href="seeker/ai-chat.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/ai-chat.html')">
+          <div class="page-card-icon">🤖</div>
+          <div class="page-card-name">AI 助残员</div>
+          <div class="page-card-desc">简历诊断+岗位推荐+面试指导</div>
+          <div class="page-card-file">ai-chat.html</div>
+        </a>
+        <a href="seeker/profile.html" target="preview-frame" class="page-card" onclick="updatePreview('seeker/profile.html')">
+          <div class="page-card-icon">👤</div>
+          <div class="page-card-name">个人中心</div>
+          <div class="page-card-desc">账户信息+无障碍设置</div>
+          <div class="page-card-file">profile.html</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="cat-group">
+      <div class="cat-title">♿ 无障碍特性</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="font-size:24px;margin-bottom:6px;">🔆</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">高对比度模式</div>
+          <div style="font-size:12px;color:#64748B;">一键切换，视力弱用户友好</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="font-size:24px;margin-bottom:6px;">🔊</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">语音播报 TTS</div>
+          <div style="font-size:12px;color:#64748B;">全页面文字朗读</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="font-size:24px;margin-bottom:6px;">🔤</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">字体大小调节</div>
+          <div style="font-size:12px;color:#64748B;">4档可调，全站生效</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="font-size:24px;margin-bottom:6px;">🎤</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">语音输入</div>
+          <div style="font-size:12px;color:#64748B;">AI助残员支持语音问答</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="font-size:24px;margin-bottom:6px;">📖</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">aria-label 标注</div>
+          <div style="font-size:12px;color:#64748B;">屏幕阅读器兼容</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="font-size:24px;margin-bottom:6px;">🎯</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px;">大按钮设计</div>
+          <div style="font-size:12px;color:#64748B;">肢体障碍用户友好</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tech-bar">
+    <div class="tech-chip">HTML5</div>
+    <div class="tech-chip">CSS3 变量</div>
+    <div class="tech-chip">原生 JavaScript</div>
+    <div class="tech-chip">移动端优先</div>
+    <div class="tech-chip">无障碍 WCAG</div>
+    <div class="tech-chip">aria-label</div>
+    <div class="tech-chip">390px 移动视口</div>
+  </div>
+
+  <div style="margin-top:24px;text-align:center;font-size:12px;color:#94A3B8;">
+    残疾人就业平台 PRD v1.2 · 原型实现 v1.0 · 仅用于产品评审演示
+  </div>
+
+  <script>
+    function updatePreview(url) {
+      document.getElementById('preview-frame').src = url;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

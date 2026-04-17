@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>岗位详情 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .detail-topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 52px;
+    }
+    .detail-topbar a { color: var(--text); text-decoration: none; font-size: 20px; }
+    .topbar-actions { display: flex; gap: 16px; align-items: center; }
+    .topbar-share { font-size: 20px; cursor: pointer; }
+    .topbar-fav { font-size: 22px; cursor: pointer; }
+
+    /* 企业头部 */
+    .company-header {
+      background: #fff;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .company-logo {
+      width: 58px; height: 58px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2563EB, #3B82F6);
+      display: flex; align-items: center;
+      justify-content: center; font-size: 28px;
+      flex-shrink: 0; color: #fff;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    }
+    .company-info { flex: 1; }
+    .company-name {
+      font-size: 17px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
+    }
+    .company-meta { font-size: 12px; color: var(--text-muted); }
+
+    /* 岗位基本信息 */
+    .job-hero {
+      background: #fff;
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .job-name { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .job-salary-big { font-size: 22px; font-weight: 800; color: #EF4444; margin-bottom: 10px; }
+    .job-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .info-item {
+      display: flex; flex-direction: column;
+      gap: 2px;
+    }
+    .info-item-label { font-size: 11px; color: #94A3B8; }
+    .info-item-value { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    /* AI 匹配分析卡 */
+    .match-card {
+      margin: 8px 12px 0;
+      background: linear-gradient(135deg, #EFF6FF, #F5F3FF);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      border: 1px solid #DBEAFE;
+    }
+    .match-card-title {
+      font-size: 14px; font-weight: 700; color: var(--primary);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .match-score-big {
+      font-size: 36px; font-weight: 900; color: var(--primary);
+      line-height: 1;
+    }
+    .match-score-label { font-size: 12px; color: var(--text-muted); }
+    .match-breakdown { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .match-row { display: flex; align-items: center; gap: 8px; }
+    .match-name { font-size: 12px; color: var(--text-muted); width: 72px; flex-shrink: 0; }
+    .match-bar { flex: 1; height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden; }
+    .match-fill { height: 100%; border-radius: 3px; }
+    .match-pts { font-size: 12px; font-weight: 700; color: var(--primary); width: 32px; text-align: right; }
+
+    /* 无障碍环境 */
+    .access-section {
+      background: #fff; padding: 16px; margin-top: 8px;
+    }
+    .access-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .access-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .access-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px;
+      background: var(--secondary-light);
+      border-radius: var(--radius-sm);
+    }
+    .access-icon { font-size: 18px; }
+    .access-text { font-size: 12px; color: var(--text); font-weight: 500; }
+
+    /* 职位描述 */
+    .desc-section { background: #fff; padding: 16px; margin-top: 8px; }
+    .desc-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .desc-content {
+      font-size: 14px; color: var(--text); line-height: 1.8;
+    }
+    .desc-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 6px; color: var(--text); }
+    .desc-content ul { padding-left: 18px; }
+    .desc-content li { margin-bottom: 4px; }
+
+    /* 福利 */
+    .welfare-section { background: #fff; padding: 16px; margin-top: 8px; }
+    .welfare-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .welfare-tag {
+      display: flex; align-items: center; gap: 4px;
+      padding: 5px 12px;
+      background: var(--secondary-light);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+
+    /* 底部投递区 */
+    .apply-bar {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 390px;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex; gap: 10px; align-items: center;
+      z-index: 100;
+    }
+    .btn-collect {
+      width: 48px; height: 48px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; cursor: pointer; background: #fff;
+      flex-shrink: 0;
+    }
+    .btn-apply {
+      flex: 1; height: 48px;
+      background: var(--primary);
+      border: none; border-radius: var(--radius-sm);
+      color: #fff; font-size: 17px; font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-apply:active { background: var(--primary-dark); }
+
+    /* 弹窗 */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300; display: none;
+      align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      width: 100%; background: #fff;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 20px 40px;
+    }
+    .modal-title {
+      font-size: 17px; font-weight: 700; color: var(--text);
+      text-align: center; margin-bottom: 4px;
+    }
+    .modal-sub { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; }
+    .resume-preview {
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .resume-avatar {
+      width: 44px; height: 44px; background: var(--primary-light);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 22px;
+    }
+    .resume-info { flex: 1; }
+    .resume-name { font-size: 15px; font-weight: 700; }
+    .resume-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .resume-complete {
+      font-size: 12px; color: var(--primary); font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div style="padding-bottom:80px;">
+    <!-- 顶部栏 -->
+    <div class="detail-topbar">
+      <a href="jobs.html" aria-label="返回">←</a>
+      <div style="font-size:15px;font-weight:600;color:var(--text);">岗位详情</div>
+      <div class="topbar-actions">
+        <span class="topbar-share" aria-label="分享" title="分享">⬆️</span>
+        <span class="topbar-fav" id="fav-btn" onclick="toggleFav()" aria-label="收藏" title="收藏">🤍</span>
+      </div>
+    </div>
+
+    <!-- 企业信息 -->
+    <div class="company-header">
+      <div class="company-logo">📞</div>
+      <div class="company-info">
+        <div class="company-name">
+          重庆联通服务有限公司
+          <span class="tag tag-gold" style="font-size:11px;">✓ 认证企业</span>
+        </div>
+        <div class="company-meta">互联网·通信 · 500-1000人 · 重庆市</div>
+      </div>
+    </div>
+
+    <!-- 岗位核心信息 -->
+    <div class="job-hero">
+      <div class="job-name">客服专员（居家办公）</div>
+      <div class="job-salary-big">5000-7000元/月</div>
+      <div class="job-tags">
+        <span class="tag tag-blue">居家办公</span>
+        <span class="tag tag-green">全职</span>
+        <span class="tag tag-orange">肢体障碍友好</span>
+        <span class="tag tag-gray">大专及以上</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-item-label">工作地点</div>
+          <div class="info-item-value">📍 渝中区（可居家）</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-label">招聘人数</div>
+          <div class="info-item-value">👥 5人</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-label">经验要求</div>
+          <div class="info-item-value">🏢 1年以上</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-label">发布时间</div>
+          <div class="info-item-value">🕐 2天前</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI 匹配分析 -->
+    <div class="match-card">
+      <div class="match-card-title">🎯 AI 匹配分析</div>
+      <div style="display:flex;align-items:flex-start;gap:16px;">
+        <div>
+          <div class="match-score-big">92</div>
+          <div class="match-score-label">匹配分</div>
+        </div>
+        <div class="match-breakdown">
+          <div class="match-row">
+            <div class="match-name">残疾适配</div>
+            <div class="match-bar"><div class="match-fill" style="width:100%;background:#2563EB;"></div></div>
+            <div class="match-pts">25/25</div>
+          </div>
+          <div class="match-row">
+            <div class="match-name">工作形式</div>
+            <div class="match-bar"><div class="match-fill" style="width:100%;background:#10B981;"></div></div>
+            <div class="match-pts">20/20</div>
+          </div>
+          <div class="match-row">
+            <div class="match-name">工作地点</div>
+            <div class="match-bar"><div class="match-fill" style="width:75%;background:#3B82F6;"></div></div>
+            <div class="match-pts">15/20</div>
+          </div>
+          <div class="match-row">
+            <div class="match-name">技能匹配</div>
+            <div class="match-bar"><div class="match-fill" style="width:80%;background:#8B5CF6;"></div></div>
+            <div class="match-pts">16/20</div>
+          </div>
+          <div class="match-row">
+            <div class="match-name">薪资期望</div>
+            <div class="match-bar"><div class="match-fill" style="width:100%;background:#F59E0B;"></div></div>
+            <div class="match-pts">15/15</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:8px 10px;background:rgba(37,99,235,0.08);border-radius:8px;font-size:12px;color:var(--primary);">
+        💡 该岗位支持居家办公，非常适合您的肢体障碍情况，且薪资区间与您的期望完全吻合！
+      </div>
+    </div>
+
+    <!-- 无障碍环境 -->
+    <div class="access-section">
+      <div class="access-title">♿ 无障碍工作环境</div>
+      <div class="access-grid">
+        <div class="access-item">
+          <div class="access-icon">🏠</div>
+          <div class="access-text">支持居家办公</div>
+        </div>
+        <div class="access-item">
+          <div class="access-icon">🛗</div>
+          <div class="access-text">无障碍电梯</div>
+        </div>
+        <div class="access-item">
+          <div class="access-icon">🚻</div>
+          <div class="access-text">无障碍卫生间</div>
+        </div>
+        <div class="access-item">
+          <div class="access-icon">🛤️</div>
+          <div class="access-text">无障碍通道</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 福利待遇 -->
+    <div class="welfare-section">
+      <div class="desc-title">🎁 福利待遇</div>
+      <div class="welfare-tags">
+        <div class="welfare-tag">✅ 五险一金</div>
+        <div class="welfare-tag">🍱 餐补200元</div>
+        <div class="welfare-tag">🚌 交通补贴</div>
+        <div class="welfare-tag">⏰ 弹性上下班</div>
+        <div class="welfare-tag">📅 带薪年假</div>
+        <div class="welfare-tag">🎂 生日福利</div>
+      </div>
+    </div>
+
+    <!-- 职位描述 -->
+    <div class="desc-section">
+      <div class="desc-title">📋 岗位职责</div>
+      <div class="desc-content">
+        <ul>
+          <li>负责通过在线聊天工具、电话等方式解答客户咨询，处理客户投诉与建议；</li>
+          <li>维护客户关系，提高客户满意度；</li>
+          <li>协助完成产品信息的整理与录入；</li>
+          <li>完成上级交办的其他工作任务。</li>
+        </ul>
+        <h4>任职要求</h4>
+        <ul>
+          <li>大专及以上学历，有客服工作经验者优先；</li>
+          <li>具有良好的沟通能力和服务意识；</li>
+          <li>熟悉Office办公软件；</li>
+          <li>持有残疾人证，公司特别欢迎肢体残疾求职者；</li>
+          <li>可接受居家办公，需具备基本网络设备。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 公司介绍 -->
+    <div class="desc-section" style="margin-top:8px;">
+      <div class="desc-title">🏢 公司介绍</div>
+      <div class="desc-content">
+        重庆联通服务有限公司是中国联通在重庆市的主要业务运营机构，成立于2002年，
+        员工规模500-1000人，承担重庆市范围内联通宽带、移动等业务的客户服务工作。
+        公司高度重视残疾人就业，目前在职残疾员工占比达8%，长期为残疾人提供稳定、有保障的工作岗位。
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部投递栏 -->
+  <div class="apply-bar">
+    <div class="btn-collect" id="collect-btn" onclick="toggleCollect()" aria-label="收藏岗位">🤍</div>
+    <button class="btn-apply" onclick="openApply()" aria-label="立即投递">立即投递</button>
+  </div>
+
+  <!-- 投递确认弹窗 -->
+  <div class="modal-overlay" id="apply-modal">
+    <div class="modal-sheet">
+      <div class="modal-title">确认投递</div>
+      <div class="modal-sub">将以下简历投递至「客服专员」岗位</div>
+      <div class="resume-preview">
+        <div class="resume-avatar">😊</div>
+        <div class="resume-info">
+          <div class="resume-name">王小明</div>
+          <div class="resume-meta">大专 · 计算机应用 · 2年经验</div>
+          <div class="resume-complete">简历完整度 55%</div>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;padding:10px 12px;background:#FFFBEB;border-radius:8px;font-size:13px;color:#92400E;">
+        ⚠️ 建议投递前补充工作经历，可提升通过率
+        <a href="resume.html" style="color:var(--primary);font-weight:600;text-decoration:none;"> 去完善 ›</a>
+      </div>
+      <button onclick="confirmApply()" style="width:100%;height:48px;background:var(--primary);border:none;border-radius:var(--radius-sm);color:#fff;font-size:17px;font-weight:700;cursor:pointer;">
+        确认投递
+      </button>
+      <button onclick="closeApply()" style="width:100%;height:44px;background:none;border:none;color:var(--text-muted);font-size:15px;cursor:pointer;margin-top:8px;">
+        取消
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let favd = false, collected = false;
+    function toggleFav() {
+      favd = !favd;
+      document.getElementById('fav-btn').textContent = favd ? '❤️' : '🤍';
+    }
+    function toggleCollect() {
+      collected = !collected;
+      document.getElementById('collect-btn').textContent = collected ? '❤️' : '🤍';
+    }
+    function openApply() { document.getElementById('apply-modal').classList.add('open'); }
+    function closeApply() { document.getElementById('apply-modal').classList.remove('open'); }
+    function confirmApply() {
+      closeApply();
+      const bar = document.querySelector('.apply-bar');
+      bar.innerHTML = '<div style="flex:1;height:48px;background:var(--secondary-light);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--secondary);font-size:16px;font-weight:700;">✓ 已成功投递</div>';
+    }
+  </script>
+</body>
+</html>

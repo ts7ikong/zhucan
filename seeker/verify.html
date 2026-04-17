@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>实名认证 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .verify-header {
+      padding: 16px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+    .step-container { padding: 16px; background: #fff; border-bottom: 1px solid var(--border); }
+    .steps-row { display: flex; align-items: center; }
+    .step-node { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+    .step-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid var(--border); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      background: #fff; color: var(--text-muted);
+    }
+    .step-circle.done { border-color: var(--secondary); background: var(--secondary); color: #fff; }
+    .step-circle.active { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .step-name { font-size: 11px; color: var(--text-muted); }
+    .step-name.active { color: var(--primary); font-weight: 600; }
+    .step-name.done { color: var(--secondary); }
+    .step-line-bar { flex: 1; height: 2px; background: var(--border); margin-bottom: 18px; }
+    .step-line-bar.done { background: var(--secondary); }
+
+    .verify-intro {
+      margin: 16px;
+      padding: 14px 16px;
+      background: var(--primary-light);
+      border-radius: var(--radius);
+      border-left: 4px solid var(--primary);
+    }
+    .verify-intro-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .verify-intro-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .verify-form { padding: 16px; }
+
+    .id-upload-area {
+      margin-bottom: 16px;
+    }
+    .id-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .id-card-upload {
+      aspect-ratio: 3/2;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .id-card-upload.uploaded {
+      border-style: solid;
+      border-color: var(--secondary);
+    }
+    .id-card-icon { font-size: 28px; }
+    .id-card-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .id-card-check {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      background: var(--secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+    }
+    .id-upload-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .face-scan-box {
+      margin: 16px 0;
+      background: #F8FAFC;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .face-icon {
+      width: 80px;
+      height: 80px;
+      border: 3px solid var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      background: var(--primary-light);
+    }
+    .face-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .face-desc { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.5; }
+
+    .verify-tips {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .verify-tips-title { font-size: 13px; font-weight: 700; color: #D97706; margin-bottom: 6px; }
+    .verify-tips-item {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      display: flex;
+      gap: 6px;
+    }
+
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-no-nav">
+    <div class="a11y-bar">
+      <button class="a11y-btn" onclick="document.body.classList.toggle('high-contrast')">🔆 对比度</button>
+    </div>
+
+    <!-- 顶部导航 -->
+    <div class="topbar" style="border-bottom:1px solid var(--border);">
+      <a href="register.html" class="topbar-back" aria-label="返回上一步">←</a>
+      <div class="topbar-title">实名认证</div>
+      <div style="width:36px"></div>
+    </div>
+
+    <!-- 步骤条 -->
+    <div class="step-container">
+      <div class="steps-row">
+        <div class="step-node">
+          <div class="step-circle done">✓</div>
+          <div class="step-name done">基本信息</div>
+        </div>
+        <div class="step-line-bar done"></div>
+        <div class="step-node">
+          <div class="step-circle active">2</div>
+          <div class="step-name active">实名认证</div>
+        </div>
+        <div class="step-line-bar"></div>
+        <div class="step-node">
+          <div class="step-circle">3</div>
+          <div class="step-name">完善简历</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 介绍 -->
+    <div class="verify-intro">
+      <div class="verify-intro-title">🔐 为什么需要实名认证？</div>
+      <div class="verify-intro-desc">
+        实名认证由腾讯云 eKYC 提供，确保就业数据真实可靠，让您的简历在企业方获得更高信任度，同时保护您的合法权益。
+      </div>
+    </div>
+
+    <div class="verify-form">
+      <!-- 基本信息 -->
+      <div class="input-group">
+        <label class="input-label">真实姓名<span class="required">*</span></label>
+        <input class="input-field" type="text" placeholder="请输入身份证上的姓名">
+      </div>
+      <div class="input-group">
+        <label class="input-label">身份证号<span class="required">*</span></label>
+        <input class="input-field" type="text" placeholder="请输入18位身份证号" maxlength="18">
+      </div>
+
+      <!-- 身份证上传 -->
+      <div class="id-upload-area">
+        <div class="input-label" style="margin-bottom:10px;">身份证照片<span class="required">*</span></div>
+        <div class="id-cards">
+          <div class="id-card-upload" onclick="simulateUpload(this, '正面')" aria-label="上传身份证正面">
+            <div class="id-card-icon">🪪</div>
+            <div class="id-card-label">身份证正面</div>
+          </div>
+          <div class="id-card-upload uploaded" aria-label="身份证反面已上传">
+            <div class="id-card-icon">🪪</div>
+            <div class="id-card-label">身份证反面</div>
+            <div class="id-card-check">✓</div>
+          </div>
+        </div>
+        <div class="id-upload-hint">仅支持 jpg/png 格式，单张不超过 5MB</div>
+      </div>
+
+      <!-- 提示 -->
+      <div class="verify-tips">
+        <div class="verify-tips-title">⚠️ 拍摄要求</div>
+        <div class="verify-tips-item">• 证件四角完整，无遮挡、无反光</div>
+        <div class="verify-tips-item">• 在光线充足环境下拍摄</div>
+        <div class="verify-tips-item">• 确保照片清晰，文字可识别</div>
+      </div>
+
+      <!-- 活体检测 -->
+      <div class="face-scan-box" onclick="simulateFace()" aria-label="开始人脸识别" role="button" tabindex="0">
+        <div class="face-icon">😊</div>
+        <div class="face-title">人脸活体检测</div>
+        <div class="face-desc">
+          点击开始，按照屏幕提示完成<br>眨眼、张嘴等动作验证
+        </div>
+        <div id="face-status" style="font-size:13px;color:var(--secondary);display:none;font-weight:600;">✓ 检测完成</div>
+      </div>
+
+      <!-- 安全声明 -->
+      <div class="security-badge">
+        <span>🔒</span>
+        <span>认证信息加密传输 · 本平台不留存原始照片和视频</span>
+      </div>
+
+      <a href="home.html" class="btn btn-primary" id="submit-btn" role="button">
+        提交认证
+      </a>
+
+      <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--text-muted);">
+        暂不认证，<a href="home.html" style="color:var(--primary);text-decoration:none;">先浏览平台</a>
+        <br><span style="font-size:11px;">（未认证用户无法投递简历）</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function simulateUpload(el, side) {
+      el.classList.add('uploaded');
+      if (!el.querySelector('.id-card-check')) {
+        const check = document.createElement('div');
+        check.className = 'id-card-check';
+        check.textContent = '✓';
+        el.appendChild(check);
+      }
+    }
+    function simulateFace() {
+      const status = document.getElementById('face-status');
+      status.style.display = 'block';
+      const box = status.parentNode;
+      box.style.borderColor = 'var(--secondary)';
+      box.style.background = 'var(--secondary-light)';
+    }
+    document.body.classList.toggle('high-contrast', false);
+  </script>
+</body>
+</html>

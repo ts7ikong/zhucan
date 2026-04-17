@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>消息中心 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .msg-header {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff; border-bottom: 1px solid var(--border);
+    }
+    .msg-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 52px;
+    }
+    .msg-topbar a { color: var(--text); font-size: 20px; text-decoration: none; }
+    .msg-topbar-title { font-size: 17px; font-weight: 700; }
+    .msg-read-all { font-size: 13px; color: var(--primary); cursor: pointer; }
+
+    .msg-tabs {
+      display: flex; padding: 0 16px; gap: 0;
+    }
+    .msg-tab {
+      padding: 10px 20px;
+      font-size: 14px; font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 2.5px solid transparent;
+      cursor: pointer; position: relative;
+    }
+    .msg-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* 消息列表 */
+    .msg-item {
+      display: flex; align-items: flex-start;
+      padding: 14px 16px; gap: 12px;
+      background: #fff; cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+    }
+    .msg-item:active { background: var(--bg); }
+    .msg-item.unread { background: #F8FAFF; }
+    .msg-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center;
+      justify-content: center; font-size: 24px;
+      flex-shrink: 0; position: relative;
+    }
+    .msg-avatar-bg-blue { background: var(--primary-light); }
+    .msg-avatar-bg-green { background: var(--secondary-light); }
+    .msg-avatar-bg-purple { background: #F5F3FF; }
+    .msg-avatar-bg-orange { background: #FFF7ED; }
+    .unread-dot {
+      position: absolute; top: 0; right: 0;
+      width: 10px; height: 10px;
+      background: var(--error);
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-body-top {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 4px;
+    }
+    .msg-sender { font-size: 15px; font-weight: 700; color: var(--text); }
+    .msg-time { font-size: 12px; color: #94A3B8; flex-shrink: 0; }
+    .msg-preview {
+      font-size: 13px; color: var(--text-muted);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .msg-preview.unread-text { color: var(--text); font-weight: 500; }
+    .msg-badge {
+      background: var(--error); color: #fff;
+      font-size: 11px; font-weight: 700;
+      min-width: 18px; height: 18px;
+      border-radius: 9px; padding: 0 5px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* 消息详情（面试邀约） */
+    .msg-detail-card {
+      margin: 10px 12px;
+      background: linear-gradient(135deg, #ECFDF5, #F0FDFA);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--secondary);
+      padding: 16px;
+    }
+    .msg-detail-title {
+      font-size: 15px; font-weight: 700; color: var(--text);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .interview-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .imeta-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--text);
+    }
+    .imeta-icon { font-size: 16px; width: 20px; }
+
+    /* 系统通知样式 */
+    .system-msg {
+      display: flex; align-items: flex-start;
+      padding: 12px 16px; gap: 10px;
+      background: #fff; border-bottom: 1px solid var(--border);
+    }
+    .sys-icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #FFF7ED; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .sys-body { flex: 1; }
+    .sys-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .sys-content { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .sys-time { font-size: 11px; color: #94A3B8; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="msg-header">
+      <div class="msg-topbar">
+        <a href="home.html">←</a>
+        <div class="msg-topbar-title">消息中心</div>
+        <div class="msg-read-all" onclick="markAllRead()">全部已读</div>
+      </div>
+      <div class="msg-tabs">
+        <div class="msg-tab active" onclick="switchTab(this)">招聘消息</div>
+        <div class="msg-tab" onclick="switchTab(this)">系统通知</div>
+        <div class="msg-tab" onclick="switchTab(this)">平台公告</div>
+      </div>
+    </div>
+
+    <!-- 置顶：面试邀约提示 -->
+    <div class="msg-detail-card">
+      <div class="msg-detail-title">🎉 您有新的面试邀约！</div>
+      <div class="interview-meta">
+        <div class="imeta-row">
+          <div class="imeta-icon">🏢</div>
+          <div>重庆联通服务有限公司</div>
+        </div>
+        <div class="imeta-row">
+          <div class="imeta-icon">💼</div>
+          <div>客服专员（居家办公）</div>
+        </div>
+        <div class="imeta-row">
+          <div class="imeta-icon">📅</div>
+          <div>2026年4月22日 14:00 · 视频面试</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="acceptInvite()" style="flex:1;height:40px;background:var(--secondary);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">接受邀约</button>
+        <button style="flex:1;height:40px;background:#fff;border:1.5px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:14px;cursor:pointer;">查看详情</button>
+      </div>
+    </div>
+
+    <!-- 招聘消息列表 -->
+    <div id="tab-recruit">
+      <a href="#" class="msg-item unread" style="text-decoration:none;">
+        <div class="msg-avatar msg-avatar-bg-blue">
+          📞
+          <div class="unread-dot"></div>
+        </div>
+        <div class="msg-body">
+          <div class="msg-body-top">
+            <div class="msg-sender">重庆联通服务</div>
+            <div class="msg-time">今天 10:32</div>
+          </div>
+          <div class="msg-preview unread-text">【面试邀约】我们诚邀您参加客服专员岗位面试，时间：4月22日14:00，视频面试，请确认...</div>
+        </div>
+        <div class="msg-badge">1</div>
+      </a>
+
+      <a href="#" class="msg-item unread" style="text-decoration:none;">
+        <div class="msg-avatar msg-avatar-bg-green">
+          🏭
+          <div class="unread-dot"></div>
+        </div>
+        <div class="msg-body">
+          <div class="msg-body-top">
+            <div class="msg-sender">重庆华远科技</div>
+            <div class="msg-time">昨天 16:15</div>
+          </div>
+          <div class="msg-preview unread-text">【面试邀约】您的简历已通过初审，邀请您参加数据录入专员岗位面试，时间：4月24日10:00...</div>
+        </div>
+        <div class="msg-badge">1</div>
+      </a>
+
+      <a href="#" class="msg-item unread" style="text-decoration:none;">
+        <div class="msg-avatar msg-avatar-bg-purple">
+          💼
+          <div class="unread-dot"></div>
+        </div>
+        <div class="msg-body">
+          <div class="msg-body-top">
+            <div class="msg-sender">重庆恒信财务</div>
+            <div class="msg-time">昨天 09:05</div>
+          </div>
+          <div class="msg-preview unread-text">您投递的「会计助理」岗位，HR已查看您的简历，期待进一步了解您...</div>
+        </div>
+        <div class="msg-badge">1</div>
+      </a>
+
+      <a href="#" class="msg-item" style="text-decoration:none;">
+        <div class="msg-avatar msg-avatar-bg-orange">🛒</div>
+        <div class="msg-body">
+          <div class="msg-body-top">
+            <div class="msg-sender">重庆天猫服务站</div>
+            <div class="msg-time">4月14日</div>
+          </div>
+          <div class="msg-preview">感谢您投递在线客服岗位，我们将尽快查看您的简历，请耐心等待...</div>
+        </div>
+      </a>
+
+      <a href="#" class="msg-item" style="text-decoration:none;">
+        <div class="msg-avatar" style="background:#FEE2E2;">😔</div>
+        <div class="msg-body">
+          <div class="msg-body-top">
+            <div class="msg-sender">重庆某科技公司</div>
+            <div class="msg-time">4月12日</div>
+          </div>
+          <div class="msg-preview">非常感谢您对软件测试工程师岗位的关注，经过综合评估，您本次未能通过...</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- 系统通知列表（默认隐藏） -->
+    <div id="tab-system" style="display:none;">
+      <div class="system-msg">
+        <div class="sys-icon">🤖</div>
+        <div class="sys-body">
+          <div class="sys-title">AI推荐了3个新岗位</div>
+          <div class="sys-content">根据您的最新简历，AI助残员为您推荐了3个高匹配岗位，快去看看吧！</div>
+          <div class="sys-time">今天 08:00</div>
+        </div>
+      </div>
+      <div class="system-msg">
+        <div class="sys-icon">📋</div>
+        <div class="sys-body">
+          <div class="sys-title">简历完整度提醒</div>
+          <div class="sys-content">您的简历完整度为55%，建议补充工作经历，可提升简历被查看的概率。</div>
+          <div class="sys-time">昨天 12:00</div>
+        </div>
+      </div>
+      <div class="system-msg">
+        <div class="sys-icon">🎉</div>
+        <div class="sys-body">
+          <div class="sys-title">实名认证成功</div>
+          <div class="sys-content">您已成功完成实名认证，现在可以投递简历，使用平台全部功能了！</div>
+          <div class="sys-time">4月15日 14:30</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 平台公告列表（默认隐藏） -->
+    <div id="tab-notice" style="display:none;">
+      <div class="system-msg">
+        <div class="sys-icon">📢</div>
+        <div class="sys-body">
+          <div class="sys-title">【新政策】2026年残疾人就业补贴标准更新</div>
+          <div class="sys-content">重庆市残联发布2026年就业补贴新标准，个人补贴最高提至1500元/月，点击查看详情。</div>
+          <div class="sys-time">今天 09:00</div>
+        </div>
+      </div>
+      <div class="system-msg">
+        <div class="sys-icon">🔧</div>
+        <div class="sys-body">
+          <div class="sys-title">平台维护通知</div>
+          <div class="sys-content">平台将于4月20日凌晨2:00-4:00进行系统升级维护，届时部分功能暂停使用，感谢理解。</div>
+          <div class="sys-time">4月18日</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">首页</div>
+    </a>
+    <a href="jobs.html" class="nav-item">
+      <div class="nav-icon">💼</div>
+      <div class="nav-label">找工作</div>
+    </a>
+    <a href="messages.html" class="nav-item active" style="position:relative;">
+      <div class="nav-icon">💬</div>
+      <div class="nav-label">消息</div>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">我的</div>
+    </a>
+  </nav>
+
+  <script>
+    const tabs = ['tab-recruit','tab-system','tab-notice'];
+    function switchTab(el) {
+      document.querySelectorAll('.msg-tab').forEach((t,i) => {
+        t.classList.toggle('active', t === el);
+        document.getElementById(tabs[i]).style.display = t === el ? 'block' : 'none';
+      });
+    }
+    function markAllRead() {
+      document.querySelectorAll('.unread-dot').forEach(d => d.remove());
+      document.querySelectorAll('.msg-badge').forEach(b => b.remove());
+      document.querySelectorAll('.unread-text').forEach(t => t.classList.remove('unread-text'));
+      document.querySelectorAll('.msg-item.unread').forEach(i => i.classList.remove('unread'));
+    }
+    function acceptInvite() {
+      alert('已接受面试邀约！详情请查看「我的投递」。');
+    }
+  </script>
+</body>
+</html>

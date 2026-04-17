@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>个人中心 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 头部 */
+    .profile-header {
+      background: linear-gradient(160deg, #1D4ED8, #3B82F6);
+      padding: 20px 16px 44px;
+      position: relative; overflow: hidden;
+    }
+    .ph-bg { position: absolute; width: 200px; height: 200px;
+      background: rgba(255,255,255,0.06); border-radius: 50%;
+      top: -60px; right: -60px; }
+    .ph-topbar {
+      display: flex; justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+    .ph-setting {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer;
+    }
+    .user-card {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .user-avatar-big {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 2.5px solid rgba(255,255,255,0.6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; cursor: pointer; flex-shrink: 0;
+      position: relative;
+    }
+    .avatar-edit {
+      position: absolute; bottom: 0; right: 0;
+      width: 22px; height: 22px;
+      background: var(--primary); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; border: 2px solid #fff;
+    }
+    .user-info { color: #fff; }
+    .user-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .user-phone { font-size: 13px; opacity: 0.8; margin-bottom: 8px; }
+    .user-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .user-badge {
+      display: flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px; padding: 3px 10px;
+      font-size: 12px; color: #fff;
+    }
+
+    /* 统计卡 */
+    .stats-card {
+      margin: -20px 12px 0;
+      position: relative; z-index: 10;
+      background: #fff; border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      display: grid; grid-template-columns: repeat(3, 1fr);
+    }
+    .stat-cell {
+      padding: 16px 8px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      border-right: 1px solid var(--border);
+      cursor: pointer; text-decoration: none;
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-num { font-size: 22px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .stat-lbl { font-size: 12px; color: var(--text-muted); }
+
+    /* 菜单组 */
+    .menu-group {
+      margin: 10px 12px 0;
+      background: #fff; border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--shadow);
+    }
+    .menu-item {
+      display: flex; align-items: center;
+      padding: 14px 16px; gap: 12px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer; text-decoration: none;
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:active { background: var(--bg); }
+    .menu-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .mi-blue { background: var(--primary-light); }
+    .mi-green { background: var(--secondary-light); }
+    .mi-purple { background: #F5F3FF; }
+    .mi-orange { background: #FFF7ED; }
+    .mi-teal { background: #F0FDFA; }
+    .mi-red { background: #FEF2F2; }
+    .mi-gray { background: #F1F5F9; }
+    .mi-yellow { background: #FEFCE8; }
+    .menu-body { flex: 1; }
+    .menu-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .menu-desc { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .menu-arrow { color: #CBD5E1; font-size: 16px; }
+    .menu-badge {
+      background: var(--error); color: #fff;
+      font-size: 11px; font-weight: 700;
+      padding: 1px 7px; border-radius: 10px; min-width: 20px;
+      text-align: center;
+    }
+    .menu-tag {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 10px;
+    }
+
+    /* 无障碍设置 */
+    .a11y-card {
+      margin: 10px 12px 0;
+      background: #fff; border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .a11y-title {
+      padding: 12px 16px;
+      font-size: 14px; font-weight: 700; color: var(--text);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .a11y-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+    }
+    .a11y-option:last-child { border-bottom: none; }
+    .a11y-option-name { font-size: 14px; color: var(--text); font-weight: 500; }
+    .a11y-option-desc { font-size: 12px; color: var(--text-muted); }
+    .toggle {
+      width: 46px; height: 26px;
+      border-radius: 13px; position: relative;
+      cursor: pointer; flex-shrink: 0; transition: background 0.2s;
+    }
+    .toggle.on { background: var(--secondary); }
+    .toggle.off { background: var(--border); }
+    .toggle::after {
+      content: ''; position: absolute;
+      top: 3px; width: 20px; height: 20px;
+      background: #fff; border-radius: 50%;
+      transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle.on::after { left: 23px; }
+    .toggle.off::after { left: 3px; }
+
+    /* 字体大小 */
+    .font-size-row {
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .font-size-btns { display: flex; gap: 8px; }
+    .fs-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: var(--text);
+    }
+    .fs-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* 退出按钮 */
+    .logout-btn {
+      display: block; margin: 12px 12px 8px;
+      padding: 14px; background: #fff;
+      border-radius: var(--radius);
+      text-align: center; color: var(--error);
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; box-shadow: var(--shadow);
+      border: none; width: calc(100% - 24px);
+    }
+    .logout-btn:active { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- 头部 -->
+    <div class="profile-header">
+      <div class="ph-bg"></div>
+      <div class="ph-topbar">
+        <div class="ph-setting">⚙️</div>
+      </div>
+      <div class="user-card">
+        <div class="user-avatar-big">
+          😊
+          <div class="avatar-edit">✏️</div>
+        </div>
+        <div class="user-info">
+          <div class="user-name">王小明</div>
+          <div class="user-phone">138****8888</div>
+          <div class="user-badges">
+            <div class="user-badge">🔰 已实名认证</div>
+            <div class="user-badge">♿ 肢体障碍·三级</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 统计数据 -->
+    <div class="stats-card">
+      <a href="applications.html" class="stat-cell" style="text-decoration:none;">
+        <div class="stat-num">8</div>
+        <div class="stat-lbl">投递记录</div>
+      </a>
+      <a href="#" class="stat-cell" style="text-decoration:none;">
+        <div class="stat-num" style="color:#F59E0B;">3</div>
+        <div class="stat-lbl">我的收藏</div>
+      </a>
+      <a href="resume.html" class="stat-cell" style="text-decoration:none;">
+        <div class="stat-num" style="color:var(--secondary);">55%</div>
+        <div class="stat-lbl">简历完整度</div>
+      </a>
+    </div>
+
+    <!-- 我的服务 -->
+    <div style="padding:14px 16px 4px;font-size:13px;font-weight:700;color:var(--text-muted);">我的服务</div>
+    <div class="menu-group">
+      <a href="resume.html" class="menu-item">
+        <div class="menu-icon mi-blue">📄</div>
+        <div class="menu-body">
+          <div class="menu-title">我的简历</div>
+          <div class="menu-desc">简历完整度 55%，点击完善</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="applications.html" class="menu-item">
+        <div class="menu-icon mi-green">📮</div>
+        <div class="menu-body">
+          <div class="menu-title">我的投递</div>
+          <div class="menu-desc">8条投递记录</div>
+        </div>
+        <div class="menu-badge">2</div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="#" class="menu-item">
+        <div class="menu-icon mi-yellow">⭐</div>
+        <div class="menu-body">
+          <div class="menu-title">我的收藏</div>
+          <div class="menu-desc">已收藏 3 个岗位</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="ai-chat.html" class="menu-item">
+        <div class="menu-icon mi-purple">🤖</div>
+        <div class="menu-body">
+          <div class="menu-title">AI 助残员</div>
+          <div class="menu-desc">简历诊断 · 岗位推荐 · 面试指导</div>
+        </div>
+        <div class="menu-tag">AI</div>
+        <div class="menu-arrow">›</div>
+      </a>
+    </div>
+
+    <!-- 工具与服务 -->
+    <div style="padding:14px 16px 4px;font-size:13px;font-weight:700;color:var(--text-muted);">工具与服务</div>
+    <div class="menu-group">
+      <a href="policy.html" class="menu-item">
+        <div class="menu-icon mi-teal">📋</div>
+        <div class="menu-body">
+          <div class="menu-title">涉残政策中心</div>
+          <div class="menu-desc">补贴政策、税收优惠</div>
+        </div>
+        <div class="menu-badge" style="background:var(--secondary);">新</div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="#" class="menu-item">
+        <div class="menu-icon mi-orange">🎓</div>
+        <div class="menu-body">
+          <div class="menu-title">职业培训课程</div>
+          <div class="menu-desc">技能提升 · 免费课程</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="#" class="menu-item">
+        <div class="menu-icon mi-red">📞</div>
+        <div class="menu-body">
+          <div class="menu-title">人工客服</div>
+          <div class="menu-desc">工作日 9:00-18:00</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </a>
+    </div>
+
+    <!-- 无障碍设置 -->
+    <div class="a11y-card">
+      <div class="a11y-title">♿ 无障碍设置</div>
+
+      <div class="a11y-option">
+        <div>
+          <div class="a11y-option-name">高对比度模式</div>
+          <div class="a11y-option-desc">加深文字与背景的对比度</div>
+        </div>
+        <div class="toggle off" id="toggle-contrast" onclick="toggleContrast()"></div>
+      </div>
+
+      <div class="a11y-option">
+        <div>
+          <div class="a11y-option-name">语音播报（TTS）</div>
+          <div class="a11y-option-desc">全页面文字朗读</div>
+        </div>
+        <div class="toggle on" id="toggle-tts" onclick="toggleTts()"></div>
+      </div>
+
+      <div class="a11y-option">
+        <div>
+          <div class="a11y-option-name">大字体模式</div>
+          <div class="a11y-option-desc">放大页面文字大小</div>
+        </div>
+        <div class="toggle off" id="toggle-font" onclick="toggleFont()"></div>
+      </div>
+
+      <div class="font-size-row">
+        <div class="a11y-option-name" style="font-size:14px;">字体大小</div>
+        <div class="font-size-btns">
+          <div class="fs-btn" style="font-size:12px;" onclick="setFontSize(this,12)">小</div>
+          <div class="fs-btn active" style="font-size:14px;" onclick="setFontSize(this,14)">中</div>
+          <div class="fs-btn" style="font-size:16px;" onclick="setFontSize(this,16)">大</div>
+          <div class="fs-btn" style="font-size:18px;" onclick="setFontSize(this,18)">特大</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 账号设置 -->
+    <div style="padding:14px 16px 4px;font-size:13px;font-weight:700;color:var(--text-muted);">账号设置</div>
+    <div class="menu-group">
+      <a href="#" class="menu-item">
+        <div class="menu-icon mi-gray">🔒</div>
+        <div class="menu-body"><div class="menu-title">修改密码</div></div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="#" class="menu-item">
+        <div class="menu-icon mi-gray">📱</div>
+        <div class="menu-body"><div class="menu-title">更换手机号</div></div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="#" class="menu-item">
+        <div class="menu-icon mi-gray">🛡️</div>
+        <div class="menu-body"><div class="menu-title">隐私政策 &amp; 用户协议</div></div>
+        <div class="menu-arrow">›</div>
+      </a>
+      <a href="#" class="menu-item">
+        <div class="menu-icon mi-gray">ℹ️</div>
+        <div class="menu-body">
+          <div class="menu-title">关于平台</div>
+          <div class="menu-desc">v1.0 · 重庆市残疾人就业数字化服务平台</div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </a>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">退出登录</button>
+
+    <div style="height:8px"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="home.html" class="nav-item">
+      <div class="nav-icon">🏠</div><div class="nav-label">首页</div>
+    </a>
+    <a href="jobs.html" class="nav-item">
+      <div class="nav-icon">💼</div><div class="nav-label">找工作</div>
+    </a>
+    <a href="messages.html" class="nav-item" style="position:relative;">
+      <div class="nav-icon">💬</div><div class="nav-label">消息</div>
+      <div class="badge" style="position:absolute;top:6px;right:22px;">3</div>
+    </a>
+    <a href="profile.html" class="nav-item active">
+      <div class="nav-icon">👤</div><div class="nav-label">我的</div>
+    </a>
+  </nav>
+
+  <script>
+    function toggleSwitch(id) {
+      const el = document.getElementById(id);
+      el.classList.toggle('on');
+      el.classList.toggle('off');
+    }
+    function toggleContrast() {
+      toggleSwitch('toggle-contrast');
+      document.body.classList.toggle('high-contrast');
+    }
+    function toggleTts() { toggleSwitch('toggle-tts'); }
+    function toggleFont() {
+      toggleSwitch('toggle-font');
+      document.body.style.fontSize = document.getElementById('toggle-font').classList.contains('on') ? '18px' : '';
+    }
+    function setFontSize(el, size) {
+      document.querySelectorAll('.fs-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      document.documentElement.style.fontSize = size + 'px';
+    }
+    function logout() {
+      if (confirm('确认退出登录？')) window.location.href = 'splash.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>首页 - 残疾人就业平台</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 首页头部横幅 */
+    .home-header {
+      background: linear-gradient(135deg, #1D4ED8, #3B82F6);
+      padding: 20px 16px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .home-header::after {
+      content: '';
+      position: absolute;
+      bottom: -24px;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: var(--bg);
+      border-radius: 24px 24px 0 0;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .header-greeting { color: rgba(255,255,255,0.85); font-size: 13px; }
+    .header-name { color: #fff; font-size: 20px; font-weight: 800; }
+    .header-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: #fff;
+      margin-top: 6px;
+    }
+
+    /* 搜索栏 */
+    .search-section {
+      padding: 0 16px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+    .search-wrap {
+      background: #fff;
+      border-radius: 24px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.15);
+    }
+    .search-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .search-wrap input::placeholder { color: #94A3B8; }
+    .search-submit {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* 简历完整度卡片 */
+    .resume-card {
+      margin: 8px 16px 0;
+      padding: 16px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .resume-ring-outer {
+      width: 64px;
+      height: 64px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .resume-ring-outer svg { transform: rotate(-90deg); width: 64px; height: 64px; }
+    .ring-text-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .ring-pct { font-size: 15px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .ring-lbl { font-size: 10px; color: var(--text-muted); }
+    .resume-card-body { flex: 1; }
+    .resume-card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .resume-card-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+    .btn-sm-primary {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* 快捷功能 */
+    .quick-actions {
+      padding: 16px;
+      background: #fff;
+      margin-top: 8px;
+    }
+    .quick-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .quick-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .quick-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .qi-blue { background: #EFF6FF; }
+    .qi-green { background: #ECFDF5; }
+    .qi-purple { background: #F5F3FF; }
+    .qi-orange { background: #FFF7ED; }
+    .qi-red { background: #FEF2F2; }
+    .qi-teal { background: #F0FDFA; }
+    .qi-yellow { background: #FEFCE8; }
+    .qi-pink { background: #FDF2F8; }
+    .quick-label { font-size: 11px; color: var(--text); font-weight: 500; text-align: center; }
+
+    /* AI 助残员横幅 */
+    .ai-banner {
+      margin: 8px 16px 0;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .ai-avatar {
+      width: 52px;
+      height: 52px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .ai-text { flex: 1; color: #fff; }
+    .ai-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    .ai-desc { font-size: 12px; opacity: 0.85; }
+    .ai-chip {
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: #fff;
+      margin-top: 6px;
+      display: inline-block;
+    }
+    .ai-arrow { color: rgba(255,255,255,0.7); font-size: 18px; }
+
+    /* 推荐岗位 */
+    .job-card {
+      margin: 0 16px 10px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    .job-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .job-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .job-salary { font-size: 16px; font-weight: 700; color: var(--error); }
+    .job-company { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .job-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .job-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .job-location { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+    .match-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--primary-light);
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .cert-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      background: #FFFBEB;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #D97706;
+      border: 1px solid #FDE68A;
+    }
+
+    /* 新政策通知栏 */
+    .policy-notice {
+      margin: 8px 16px 0;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .notice-icon { font-size: 18px; }
+    .notice-text { flex: 1; font-size: 13px; color: #92400E; }
+    .notice-new {
+      background: var(--error);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    /* AI 悬浮按钮 */
+    .ai-float {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 20px);
+      right: 16px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 4px 16px rgba(79,70,229,0.4);
+      cursor: pointer;
+      z-index: 99;
+      text-decoration: none;
+    }
+    .ai-float-tip {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 82px);
+      right: 16px;
+      background: #4F46E5;
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- 头部 -->
+    <div class="home-header">
+      <div class="header-top">
+        <div>
+          <div class="header-greeting">你好 👋</div>
+          <div class="header-name">王小明</div>
+          <div class="header-badge">🔰 已实名认证</div>
+        </div>
+        <a href="profile.html" class="header-avatar" aria-label="个人中心">😊</a>
+      </div>
+    </div>
+
+    <!-- 搜索 -->
+    <div class="search-section" style="margin-top:-16px;position:relative;z-index:10;">
+      <a href="jobs.html" style="text-decoration:none;display:block;">
+        <div class="search-wrap">
+          <span style="color:#94A3B8;font-size:16px;">🔍</span>
+          <input type="text" placeholder="搜索岗位、公司名称..." readonly style="cursor:pointer;">
+          <button class="search-submit">搜索</button>
+        </div>
+      </a>
+    </div>
+
+    <!-- 简历完整度 -->
+    <div class="resume-card">
+      <div class="resume-ring-outer">
+        <svg viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E8F0" stroke-width="6"/>
+          <circle cx="32" cy="32" r="26" fill="none" stroke="#2563EB" stroke-width="6"
+            stroke-dasharray="163.36" stroke-dashoffset="73.51" stroke-linecap="round"/>
+        </svg>
+        <div class="ring-text-overlay">
+          <div class="ring-pct">55%</div>
+          <div class="ring-lbl">完整度</div>
+        </div>
+      </div>
+      <div class="resume-card-body">
+        <div class="resume-card-title">简历还差一点点 💪</div>
+        <div class="resume-card-hint">补充工作经历可提升投递通过率</div>
+        <a href="resume.html" class="btn-sm-primary">去完善简历</a>
+      </div>
+    </div>
+
+    <!-- 政策通知 -->
+    <a href="policy.html" class="policy-notice" style="text-decoration:none;">
+      <div class="notice-icon">📢</div>
+      <div class="notice-text">重庆市2026年残疾人就业补贴政策更新</div>
+      <div class="notice-new">NEW</div>
+    </a>
+
+    <!-- 快捷功能 -->
+    <div class="quick-actions">
+      <div class="quick-title">快捷入口</div>
+      <div class="quick-grid">
+        <a href="jobs.html" class="quick-item" style="text-decoration:none;">
+          <div class="quick-icon qi-blue">💼</div>
+          <div class="quick-label">找工作</div>
+        </a>
+        <a href="resume.html" class="quick-item" style="text-decoration:none;">
+          <div class="quick-icon qi-green">📄</div>
+          <div class="quick-label">我的简历</div>
+        </a>
+        <a href="applications.html" class="quick-item" style="text-decoration:none;">
+          <div class="quick-icon qi-orange">📮</div>
+          <div class="quick-label">我的投递</div>
+        </a>
+        <a href="policy.html" class="quick-item" style="text-decoration:none;">
+          <div class="quick-icon qi-purple">📋</div>
+          <div class="quick-label">政策中心</div>
+        </a>
+        <a href="ai-chat.html" class="quick-item" style="text-decoration:none;">
+          <div class="quick-icon qi-teal">🤖</div>
+          <div class="quick-label">AI助残员</div>
+        </a>
+        <a href="messages.html" class="quick-item" style="text-decoration:none;">
+          <div class="quick-icon qi-red">💬</div>
+          <div class="quick-label">消息中心</div>
+        </a>
+        <div class="quick-item">
+          <div class="quick-icon qi-yellow">🎓</div>
+          <div class="quick-label">培训课程</div>
+        </div>
+        <div class="quick-item">
+          <div class="quick-icon qi-pink">📞</div>
+          <div class="quick-label">人工客服</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI 助残员横幅 -->
+    <a href="ai-chat.html" class="ai-banner" style="text-decoration:none;">
+      <div class="ai-avatar">🤖</div>
+      <div class="ai-text">
+        <div class="ai-title">AI 助残员</div>
+        <div class="ai-desc">简历诊断 · 岗位推荐 · 面试技巧</div>
+        <div class="ai-chip">点击开始对话</div>
+      </div>
+      <div class="ai-arrow">›</div>
+    </a>
+
+    <!-- 推荐岗位 -->
+    <div class="section-title" style="margin-top:8px;">
+      <span>🎯 为你推荐</span>
+      <a href="jobs.html" class="section-more">查看更多</a>
+    </div>
+
+    <a href="job-detail.html" class="job-card">
+      <div class="job-card-top">
+        <div class="job-title">客服专员（居家办公）</div>
+        <div class="job-salary">5000-7000元</div>
+      </div>
+      <div class="job-company">
+        重庆联通服务有限公司
+        <span class="cert-badge">✓ 认证</span>
+      </div>
+      <div class="job-tags">
+        <span class="tag tag-blue">居家办公</span>
+        <span class="tag tag-green">全职</span>
+        <span class="tag tag-gray">大专及以上</span>
+        <span class="tag tag-orange">肢体障碍友好</span>
+      </div>
+      <div class="job-footer">
+        <div class="job-location">📍 重庆市渝中区（可居家）</div>
+        <div class="match-badge">🎯 92分匹配</div>
+      </div>
+    </a>
+
+    <a href="job-detail.html" class="job-card">
+      <div class="job-card-top">
+        <div class="job-title">数据录入员</div>
+        <div class="job-salary">4000-5500元</div>
+      </div>
+      <div class="job-company">重庆华远科技有限公司</div>
+      <div class="job-tags">
+        <span class="tag tag-blue">全职</span>
+        <span class="tag tag-gray">不限学历</span>
+        <span class="tag tag-green">五险一金</span>
+      </div>
+      <div class="job-footer">
+        <div class="job-location">📍 重庆市江北区</div>
+        <div class="match-badge">🎯 85分匹配</div>
+      </div>
+    </a>
+
+    <a href="job-detail.html" class="job-card">
+      <div class="job-card-top">
+        <div class="job-title">会计助理</div>
+        <div class="job-salary">4500-6000元</div>
+      </div>
+      <div class="job-company">
+        重庆恒信财务咨询有限公司
+        <span class="cert-badge">✓ 认证</span>
+      </div>
+      <div class="job-tags">
+        <span class="tag tag-blue">全职</span>
+        <span class="tag tag-gray">大专及以上</span>
+        <span class="tag tag-green">弹性上下班</span>
+        <span class="tag tag-orange">视力障碍友好</span>
+      </div>
+      <div class="job-footer">
+        <div class="job-location">📍 重庆市沙坪坝区</div>
+        <div class="match-badge">🎯 78分匹配</div>
+      </div>
+    </a>
+
+    <a href="job-detail.html" class="job-card">
+      <div class="job-card-top">
+        <div class="job-title">电商运营助理</div>
+        <div class="job-salary">5000-8000元</div>
+      </div>
+      <div class="job-company">重庆京东物流服务站</div>
+      <div class="job-tags">
+        <span class="tag tag-blue">兼职</span>
+        <span class="tag tag-green">餐补</span>
+        <span class="tag tag-gray">不限学历</span>
+      </div>
+      <div class="job-footer">
+        <div class="job-location">📍 重庆市九龙坡区</div>
+        <div class="match-badge">🎯 72分匹配</div>
+      </div>
+    </a>
+
+    <div style="height:8px;background:var(--bg)"></div>
+  </div>
+
+  <!-- AI 悬浮按钮 -->
+  <div class="ai-float-tip">AI 助残员</div>
+  <a href="ai-chat.html" class="ai-float" aria-label="打开AI助残员">🤖</a>
+
+  <!-- 底部导航 -->
+  <nav class="bottom-nav" aria-label="主导航">
+    <a href="home.html" class="nav-item active" aria-label="首页">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">首页</div>
+    </a>
+    <a href="jobs.html" class="nav-item" aria-label="找工作">
+      <div class="nav-icon">💼</div>
+      <div class="nav-label">找工作</div>
+    </a>
+    <a href="messages.html" class="nav-item" aria-label="消息" style="position:relative;">
+      <div class="nav-icon">💬</div>
+      <div class="nav-label">消息</div>
+      <div class="badge" style="position:absolute;top:6px;right:22px;">3</div>
+    </a>
+    <a href="profile.html" class="nav-item" aria-label="我的">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">我的</div>
+    </a>
+  </nav>
+</body>
+</html>
